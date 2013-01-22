@@ -1,0 +1,195 @@
+﻿/* 
+* csscalendarios.css
+* hoja de estilos para archivos que lo usen en el directorio raiz
+* creado				01/08/2011
+* modificado  		14/04/2012
+* autor				I.S.C. Alejandro Diaz Garcia
+*/
+table.tabladeeventos{
+	background:#FFF;
+	border-left:solid 1px #333;
+	border-top:solid 1px #333;
+	font-size:11px;
+
+}
+table.tabladeeventos th{
+	text-align:left;
+	border-right:solid 1px #333;
+
+
+
+}
+table.tabladeeventos td{
+	text-align:justify;
+	border-right:solid 1px #333;
+	border-bottom:solid 1px #333;
+}
+table.tabladeeventos td a{
+	font-weight:bold;
+	color:#006B9A;
+	text-decoration:none;
+}
+table.tabladeeventos td a:hover{
+	text-decoration:underline;
+}
+
+#cuadrointeresado{
+	padding:5px;
+	text-align:center;
+	padding:15px 0;	
+}
+
+#detallescurso{
+	padding:10px 5px;
+	position:relative;
+	text-transform:uppercase;
+	font-weight:bold;
+	text-align:left;
+	color:#666;
+}
+
+
+.txt_titulo{
+	color:#ff0000;
+}
+
+.imgcurso{
+	padding-bottom:15px;
+}
+
+
+.cabezerahover{
+	height:31px;
+	width:138px;
+	background-repeat:no-repeat;
+	display:block;
+}
+
+.cabezerahover:hover{
+	background-position:0 -31px;
+}
+
+
+.imageder_gv{
+	padding-bottom:15px;
+
+}
+.padding10 {
+	padding:0 10px;
+}
+
+#verdetcal{
+	position: absolute; 
+	border:solid 1px #333;
+	display:none;
+	max-width:250px;
+	max-height:150px;
+	overflow:hidden;
+	padding:5px 0;
+	background-color:#FFF;
+	font-size:10px;
+	z-index:1000px;
+
+}
+
+/*cal*/
+.cal_mesbkgnumdia td{
+	height:65px;
+	border-bottom:solid 1px #CCC;
+	border-right:solid 1px #CCC;
+	background:#FFF;
+}
+.cal_mesbkgnumdia a
+{
+	text-decoration:underline;
+	float:right;
+
+}
+
+.cal_mes_labeldiasG {
+	font-size : 12px;
+	color: #666;
+}
+.cal_mes_labeldias  {
+	font-size : 10px;
+	color: #666;
+	padding: 0 2px;
+}
+
+.cal_anualbkgnumdia td {
+	border-bottom:solid 1px #CCC;
+	border-right:solid 1px #CCC;
+	background:#FFF;
+}
+
+.cal_mesbkgfs	{
+	text-align:	center;
+}
+
+.cal_mes_bkgtit{
+	background:#dedede;
+}
+.cal_mes_tit a:link, .cal_mes_tit a:visited, .cal_mes_tit a:active{	
+	font-size:12px;
+	text-align:left;
+	font-weight:bold;
+	color:#2b2b2b;
+	text-decoration:none;
+}
+.cal_titulo{
+	font-size:13px;
+	font-weight:bold;
+	padding:5px 0 0 0;
+	display:block;
+	color:#FFF;
+}
+.mes_body{
+	background:#dedede;
+	font-size:11px;
+	text-align:left;
+	font-weight:bold;
+	color:#2b2b2b;
+	border:solid 1px #CCC;
+	padding: 5px;
+	margin: 5px;
+}
+a.mes_numdia, .mes_numdia{
+	font-size:11px;
+	color:#4183C4;
+	text-decoration:none;
+	text-align:center;
+	width:20px;
+	height:18px;
+	display:block;
+}
+
+a.mes_numdia {
+	color:#333;
+}
+
+span.ndia{
+	float:right;
+	color:#999;
+
+}
+
+/*cal*/
+
+span.evento_cotizado {
+	background-color: #f6d729;
+	display: inline-block;
+	width: 15px;
+	height: 15px;
+}
+span.evento_vendido {
+	background-color: #1be316;
+	display: inline-block;
+	width: 15px;
+	height: 15px;
+}
+span.evento_terminado {
+	background-color: #f67c46;
+	display: inline-block;
+	width: 15px;
+	height: 15px;
+}
