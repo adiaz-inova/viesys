@@ -26,6 +26,8 @@ define('MODULO', 500);
 	function add2list() {
 		var destino = $("#list_servicios");
 		var Ftipoeve = $("#Ftipoeve");
+		var detalle = $("#detalle");
+		// alert(detalle.val())
 		var div = $("#notices");
 
 		if(Ftipoeve.val() != null && Ftipoeve.val() !="") {
@@ -43,11 +45,13 @@ define('MODULO', 500);
 					var ctotal = $("#ctotal");
 					var arrserv = $("#arrserv");
 					var cadserv = "";
+
+					//esta parte solo arma la cadena de arrserv
 					if(arrserv.val()=="") {
 						cadserv = Fservicio.val()+"|";
 					}else {
 						var arritems = arrserv.val().split("|");
-						// if($.inArray(""+Fservicio.val()+"", arritems) != -1) {
+						if($.inArray(""+Fservicio.val()+"", arritems) != -1) {
 							var costovalidoTemp = parseFloat($("#Fcostoxserv"+Fservicio.val()).val());
 							// primero le resto su mismo valor anterior
 							var total_sincomas = ctotal.val().replace(",","");
@@ -62,17 +66,17 @@ define('MODULO', 500);
 							$("#civa").val(iva);
 							$("#ccosto").val(campototal);
 
-							// $("#list_item_serv"+Fservicio.val()).remove();
+							$("#list_item_serv"+Fservicio.val()).remove();
 							cadserv = arrserv.val();
-						// }else
-						// 	cadserv = arrserv.val()+Fservicio.val()+"|";
+						} else
+							cadserv = arrserv.val()+Fservicio.val()+"|";
 					}
 					arrserv.val(cadserv);
 
 					var respaldo = destino.html();
 					var costoxserv = parseFloat(Fservicio.val());
 					costoxserv = costoxserv.toFixed(2);
-					respaldo += "<div id=\"list_item_serv"+Fservicio.val()+"\"><input type=\"hidden\" value=\""+costoxserv+"\" name=\"Fservicios[]\" /><input type=\"button\" value=\"-\" onclick=\"quitar_servicio(this)\" identif=\""+Fservicio.val()+"\" class=\"ui-button ui-widget ui-state-default ui-corner-all\" role=\"button\" ><textarea name=\"Fdetallesxserv[]\" id=\"Fdetallesxserv"+Fservicio.val()+"\"></textarea><input type=\"text\" value=\""+Fcosto.val()+"\" name=\"Fcostoxserv[]\" id=\"Fcostoxserv"+Fservicio.val()+"\" readonly=\"readonly\" style=\"text-align:right;\"/> <span>"+$("#Fservicio option[value=\""+Fservicio.val()+"\"]").text()+"</span></div>";
+					respaldo += "<div id=\"list_item_serv"+Fservicio.val()+"\"><input type=\"hidden\" value=\""+costoxserv+"\" name=\"Fservicios[]\" /><input type=\"button\" value=\"-\" onclick=\"quitar_servicio(this)\" identif=\""+Fservicio.val()+"\" class=\"ui-button ui-widget ui-state-default ui-corner-all\" role=\"button\" ><textarea name=\"Fdetallesxserv[]\" id=\"Fdetallesxserv"+Fservicio.val()+"\">"+detalle.val()+"</textarea><input type=\"text\" value=\""+Fcosto.val()+"\" name=\"Fcostoxserv[]\" id=\"Fcostoxserv"+Fservicio.val()+"\" readonly=\"readonly\" style=\"text-align:right;\"/> <span>"+$("#Fservicio option[value=\""+Fservicio.val()+"\"]").text()+"</span></div>";
 					destino.html(respaldo);
 					
 					if(ctotal.val()=="")
@@ -90,6 +94,7 @@ define('MODULO', 500);
 					$("#ccosto").val(campototal);
 
 					Fcosto.val("");
+					detalle.val("");
 				}
 
 			}else {
@@ -978,22 +983,7 @@ define('MODULO', 500);
 					<h4>Servicios solicitados</h4>
 					<table width="100%" cellpadding="5" cellspacing="0">
 						<tr>
-							<input name="Ftipoeve" type="hidden" id="Ftipoeve" value="5"/><!-- el ID 5 es UNICO_TIPO -->
-							<!--<td width="30%" valign="top" align="left">
-								<label>TIPO</label>
-								<select class="" name="Ftipoeve" id="Ftipoeve" req="req" lab="Tipo de evento" onchange="carga('servicios', 'selServ');" >
-									<option value="">seleccione</option>
-									<?php
-										$sql="select id_tip_ser, nombre from tipo_servicio order by nombre";
-										
-										$stid = mysql_query($sql);
-
-										while (($rowPer = mysql_fetch_assoc($stid))) {
-											echo '	<option value="'.$rowPer['id_tip_ser'].'">'.$rowPer['nombre'].'</option>';
-										}
-									?>
-								</select>
-							</td> -->
+							<input name="Ftipoeve" type="hidden" id="Ftipoeve" value="5"/>
 							<td width="40%" valign="top" align="left" id="selServ"></td>
 							<script language="javascript"> carga('servicios', 'selServ'); </script>
 							<td width="30%" valign="top" align="left">
@@ -1001,6 +991,11 @@ define('MODULO', 500);
 								$ <input type="text" name="Fcosto" id="Fcosto" value="" size="10" style="text-align:right;"  onkeypress="return vFlotante(event, this);" />
 								<input type="button" value="+" onclick="add2list()" />
 							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>DETALLE DEL SERVICIO </label>
+								<textarea name="detalle" id="detalle" cols="60" rows="5"></textarea></td>
 						</tr>
 						<tr>
 							<td colspan="3" id="list_servicios">

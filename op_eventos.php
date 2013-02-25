@@ -115,12 +115,15 @@ define('MODULO', 500);
 			$pagado = (isset($Fpagado) && $Fpagado!='')? $Fpagado : 0;
 			$Ffactura = (isset($Ffactura) && $Ffactura=='1')?'1':'0';
 
+
 			$Fcosto = $_POST['Fcostoxserv'];
+			$Fdetallesxserv = $_POST['Fdetallesxserv'];
 
 			$cos_total = 0;
 			foreach ($Fcosto as $costo) {
 				$cos_total += $costo;
 			}
+
 
 			# UN EVENTO NUEVO ENTRA COMO COTIZADO
 			$Festatus = 11;
@@ -136,7 +139,7 @@ define('MODULO', 500);
 				$i=0;
 				foreach ($Fservicios as $Fservicio) {
 
-					$qry3 = "INSERT INTO servicios_eventos (id_ser, id_eve, costo) values(".(int)$Fservicio.",".(int)$Fid.", '".formateo($Fcosto[$i])."')";
+					$qry3 = "INSERT INTO servicios_eventos (id_ser, id_eve, costo, detalle) values(".(int)$Fservicio.",".(int)$Fid.", '".formateo($Fcosto[$i])."', '".$Fdetallesxserv[$i]."')";
 					if(!$stid3 = mysql_query($qry3))
 						echo 'Ocurrio un error al actualizar los permisos del grupo.'.$qry3.'<br>';
 				$i++;
