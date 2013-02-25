@@ -31,7 +31,7 @@ define('MODULO', 500);
 							
 			$sql = "select id_eve_notes id, notas, falta
 				, date_format(falta, '%d/%m/%Y')fecha
-				, date_format(falta, '%r')hora
+				, date_format(falta, '%T')hora
 				from eventos_notas
 				where id_eve=".$id_eve."
 				order by falta desc";
@@ -201,7 +201,7 @@ define('MODULO', 500);
 							
 			$sql = "select id_eve_notes id, notas, falta
 				, date_format(falta, '%d/%m/%Y')fecha
-				, date_format(falta, '%r')hora
+				, date_format(falta, '%T')hora
 				, concat(emp.nombre, ' ', emp.ape_pat, ' ', emp.ape_mat)empleado
 				from eventos_notas
 				left join empleados emp using(id_emp)

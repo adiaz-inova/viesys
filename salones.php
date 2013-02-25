@@ -94,9 +94,9 @@ define('MODULO', 300);
 					?>
 						<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" id="row<?php echo $id; ?>">
 							<td align="center" class="celdaNormal"><?php echo $registros; ?></td>
-							<td align="left" class="celdaNormal"><a href="salones.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $salon; ?></a></td>
-							<td align="left" class="celdaNormal"><a href="salones.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $responsable; ?></a></td>
-							<td align="left" class="celdaNormal"><a href="salones.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $tel; ?></a></td>
+							<td align="left" class="celdaNormal"><?php echo $salon; ?></td>
+							<td align="left" class="celdaNormal"><?php echo $responsable; ?></td>
+							<td align="left" class="celdaNormal"><?php echo $tel; ?></td>
 							<td align="center" class="celdaNormal"><?php echo $ver_cotizaciones; ?></td>
 							<td align="center" class="celdaNormal"><?php echo $ver_eventos; ?></td>
 							<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
@@ -131,6 +131,7 @@ define('MODULO', 300);
 			salones.responsable,
 			salones.fec_ingreso ingreso,
 			salones.tel,
+			salones.tel2,
 			salones.email,
 			salones.dir,
 			salones.porcentaje,
@@ -156,8 +157,8 @@ define('MODULO', 300);
 								<input class="" name="Fnombre" type="text" id="Fnombre" value="<?php echo $row['nombre']; ?>" size="50" maxlength="50" onkeypress="return vAbierta(event, this);" req="req" lab="Nombre del salón" />
 							</td>
 							<td width="50%" align="left">
-								<label><span class="required">*</span>RESPONSABLE </label>
-								<input class="" name="Fresponsable" type="text" id="Fresponsable" value="<?php echo $row['responsable']; ?>" size="50" maxlength="75" onkeypress="return vLetras(event, this);" req="req" lab="Nombre del Responsable" />
+								<label>RESPONSABLE </label>
+								<input class="" name="Fresponsable" type="text" id="Fresponsable" value="<?php echo $row['responsable']; ?>" size="50" maxlength="75" onkeypress="return vLetras(event, this);" req="" lab="Nombre del Responsable" />
 							</td>
 						</tr>
 						<tr>
@@ -178,20 +179,26 @@ define('MODULO', 300);
 								<input class="" name="Fdireccion" type="text" id="Fdireccion" value="<?php echo $row['dir']; ?>" size="80" maxlength="100" />
 							</td>
 						</tr>
+					</table>
+					<table width="100%" cellpadding="5" cellspacing="0">
 						<tr>
-							<td width="50%" align="left">
-								<label><!--span class="required">*</span-->EMAIL </label>
+							<td width="40%" align="left">
+								<label>EMAIL </label>
 								<input class="" name="Femail" type="text" id="Femail" value="<?php echo $row['email']; ?>" size="25" maxlength="60" />
 							</td>
-							<td width="50%" align="left">
-								<label><span class="required">*</span>TELÉFONO </label>
-								<input class="" name="Ftel" type="text" id="Ftel" value="<?php echo $row['tel']; ?>" size="10" maxlength="12" title="número de teléfono" onkeypress="return vNumeros(event, this);" req="req" lab="Teléfono" />
+							<td width="30%" align="left">
+								<label>TELÉFONO </label>
+								<input class="" name="Ftel" type="text" id="Ftel" value="<?php echo $row['tel']; ?>" size="20" maxlength="25" title="número de teléfono" onkeypress="return vAbierta(event, this);" req="" lab="Teléfono" />
+							</td>
+							<td width="30%" align="left">
+								<label>TELÉFONO 2</label>
+								<input class="" name="Ftel2" type="text" id="Ftel2" value="<?php echo $row['tel2']; ?>" size="20" maxlength="25" title="número de teléfono adicional" onkeypress="return vAbierta(event, this);" req="" lab="Teléfono" />
 							</td>
 						</tr>
 					</table>
 					<hr class="bleed-flush compact" />
 
-					<h4>Comisión</h4>
+					<!-- <h4>Comisión</h4>
 					<table width="100%" cellpadding="5" cellspacing="0">				
 						<tr>
 							<td valign="top" align="left">
@@ -200,7 +207,8 @@ define('MODULO', 300);
 							</td>
 						</tr>				
 					</table>
-					<hr class="bleed-flush compact" />
+					<hr class="bleed-flush compact" /> -->
+						<input type="hidden" value="<?php echo $row['porcentaje']; ?>" name="Fporc" id="Fporc" req="" lab="Porcentaje" />
 
 					<h4>Estatus</h4>
 					<table width="100%" cellpadding="5" cellspacing="0">				
@@ -230,7 +238,7 @@ define('MODULO', 300);
 				<table width="100%" cellpadding="3" cellspacing="3" align="center">
 					<tr>
 						<td align="center"><br />
-				            <input type="button" name="" value="Guardar y Salir" act="exit" onclick="update(this, 'salones', 'Fnombre|Fresponsable|Femail|Ftel|Festatus', 'notices');" />&nbsp;
+				            <input type="button" name="" value="Guardar y Salir" act="exit" onclick="update(this, 'salones', 'Fnombre|Festatus', 'notices');" />&nbsp;
 				            <input name="" type="button" value="Cancelar" onclick="javascript:window.location.href='<?php echo $_SERVER['PHP_SELF'] ?>';" />
 							<div class="avisorequired"><span class="required">* campos requeridos</span></div>
 						</td>
@@ -255,8 +263,8 @@ define('MODULO', 300);
 							<input class="" name="Fnombre" type="text" id="Fnombre" value="" size="50" maxlength="50" onkeypress="return vAbierta(event, this);" req="req" lab="Nombre del salón" />
 						</td>
 						<td width="50%" align="left">
-							<label><span class="required">*</span>RESPONSABLE </label>
-							<input class="" name="Fresponsable" type="text" id="Fresponsable" value="" size="50" maxlength="75" onkeypress="return vLetras(event, this);" req="req" lab="Nombre del Responsable" />
+							<label>RESPONSABLE </label>
+							<input class="" name="Fresponsable" type="text" id="Fresponsable" value="" size="50" maxlength="75" onkeypress="return vLetras(event, this);" req="" lab="Nombre del Responsable" />
 						</td>
 					</tr>
 					<tr>
@@ -276,20 +284,26 @@ define('MODULO', 300);
 							<input class="" name="Fdireccion" type="text" id="Fdireccion" value="" size="80" maxlength="100" />
 						</td>
 					</tr>
+				</table>
+				<table width="100%" cellpadding="5" cellspacing="0">
 					<tr>
-						<td width="50%" align="left">
-							<label><!--span class="required">*</span-->EMAIL </label>
+						<td width="40%" align="left">
+							<label>EMAIL </label>
 							<input class="" name="Femail" type="text" id="Femail" value="" size="25" maxlength="60" />
 						</td>
-						<td width="50%" align="left">
+						<td width="30%" align="left">
 							<label><span class="required">*</span>TELÉFONO </label>
-							<input class="" name="Ftel" type="text" id="Ftel" value="" size="10" maxlength="12" title="número de teléfono" onkeypress="return vNumeros(event, this);" req="req" lab="Teléfono" />
+							<input class="" name="Ftel" type="text" id="Ftel" value="" size="20" maxlength="25" title="número de teléfono" onkeypress="return vAbierta(event, this);" req="req" lab="Teléfono" />
+						</td>
+						<td width="30%" align="left">
+							<label>TELÉFONO 2</label>
+							<input class="" name="Ftel2" type="text" id="Ftel2" value="" size="20" maxlength="25" title="número de teléfono" onkeypress="return vAbierta(event, this);" req="" lab="Teléfono" />
 						</td>
 					</tr>
 				</table>
 				<hr class="bleed-flush compact" />
 
-				<h4>Comisión</h4>
+				<!-- <h4>Comisión</h4>
 				<table width="100%" cellpadding="5" cellspacing="0">				
 					<tr>
 						<td valign="top" align="left">
@@ -298,12 +312,13 @@ define('MODULO', 300);
 						</td>
 					</tr>				
 				</table>
-				<hr class="bleed-flush compact" />
+				<hr class="bleed-flush compact" /> -->
+					<input type="hidden" value="" name="Fporc" id="Fporc" req="" lab="Porcentaje" />
 
 				<table width="100%" cellpadding="3" cellspacing="3" align="center">
 					<tr>
 						<td align="center"><br />
-				            <input type="button" onclick="add(this, 'salones', 'Fnombre|Fresponsable|Femail|Ftel', 'notices');" value="Guardar cambios" />
+				            <input type="button" onclick="add(this, 'salones', 'Fnombre|Festatus', 'notices');" value="Guardar cambios" />
 				            <input name="" type="button" value="Cancelar" onclick="javascript:window.location.href='<?php echo $_SERVER['PHP_SELF'] ?>';" />
 							<div class="avisorequired"><span class="required">* campos requeridos</span></div>
 						</td>

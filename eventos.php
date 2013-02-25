@@ -47,30 +47,48 @@ define('MODULO', 500);
 						cadserv = Fservicio.val()+"|";
 					}else {
 						var arritems = arrserv.val().split("|");
-						if($.inArray(""+Fservicio.val()+"", arritems) != -1) {
+						// if($.inArray(""+Fservicio.val()+"", arritems) != -1) {
 							var costovalidoTemp = parseFloat($("#Fcostoxserv"+Fservicio.val()).val());
-							var resta = parseFloat(ctotal.val()) - costovalidoTemp;
-							ctotal.val(resta);
+							// primero le resto su mismo valor anterior
+							var total_sincomas = ctotal.val().replace(",","");
+							var resta = parseFloat(total_sincomas) - costovalidoTemp;
 
-							$("#list_item_serv"+Fservicio.val()).remove();
+							var iva = resta * 0.16;
+							var campototal = resta + iva;
+							iva = iva.toFixed(2);
+							campototal = campototal.toFixed(2);
+
+							ctotal.val(resta);
+							$("#civa").val(iva);
+							$("#ccosto").val(campototal);
+
+							// $("#list_item_serv"+Fservicio.val()).remove();
 							cadserv = arrserv.val();
-						}else
-							cadserv = arrserv.val()+Fservicio.val()+"|";
+						// }else
+						// 	cadserv = arrserv.val()+Fservicio.val()+"|";
 					}
 					arrserv.val(cadserv);
 
 					var respaldo = destino.html();
 					var costoxserv = parseFloat(Fservicio.val());
 					costoxserv = costoxserv.toFixed(2);
-					respaldo += "<div id=\"list_item_serv"+Fservicio.val()+"\"><input type=\"hidden\" value=\""+costoxserv+"\" name=\"Fservicios[]\" /><input type=\"button\" value=\"-\" onclick=\"quitar_servicio(this)\" identif=\""+Fservicio.val()+"\" class=\"ui-button ui-widget ui-state-default ui-corner-all\" role=\"button\" ><input type=\"text\" value=\""+Fcosto.val()+"\" name=\"Fcostoxserv[]\" id=\"Fcostoxserv"+Fservicio.val()+"\" readonly=\"readonly\" style=\"text-align:right;\"/> <span>"+$("#Fservicio option[value=\""+Fservicio.val()+"\"]").text()+"</span></div>";
+					respaldo += "<div id=\"list_item_serv"+Fservicio.val()+"\"><input type=\"hidden\" value=\""+costoxserv+"\" name=\"Fservicios[]\" /><input type=\"button\" value=\"-\" onclick=\"quitar_servicio(this)\" identif=\""+Fservicio.val()+"\" class=\"ui-button ui-widget ui-state-default ui-corner-all\" role=\"button\" ><textarea name=\"Fdetallesxserv[]\" id=\"Fdetallesxserv"+Fservicio.val()+"\"></textarea><input type=\"text\" value=\""+Fcosto.val()+"\" name=\"Fcostoxserv[]\" id=\"Fcostoxserv"+Fservicio.val()+"\" readonly=\"readonly\" style=\"text-align:right;\"/> <span>"+$("#Fservicio option[value=\""+Fservicio.val()+"\"]").text()+"</span></div>";
 					destino.html(respaldo);
 					
 					if(ctotal.val()=="")
 						ctotal.val(0);
-
-					var suma = parseFloat(ctotal.val()) + costovalido;
+					
+					var total_sincomas = ctotal.val().replace(",","");
+					var suma = parseFloat(total_sincomas) + costovalido;
+					var iva = suma * 0.16;
+					var campototal = suma + iva;
+					iva = iva.toFixed(2);
+					campototal = campototal.toFixed(2);
 					suma = suma.toFixed(2);
 					ctotal.val(suma);
+					$("#civa").val(iva);
+					$("#ccosto").val(campototal);
+
 					Fcosto.val("");
 				}
 
@@ -87,8 +105,14 @@ define('MODULO', 500);
 		if(ctotal.val() != ""){
 			var costovalido = parseFloat($("#Fcostoxserv"+id).val());
 			var resta = parseFloat(ctotal.val()) - costovalido;
-			resta = resta.toFixed(2);
+			var iva = resta * 0.16;
+			var campototal = resta + iva;
+			iva = (iva > 0)?iva.toFixed(2):0.00;
+			campototal = (campototal > 0)?campototal.toFixed(2):0.00;
+			resta = (resta > 0)?resta.toFixed(2):0.00;
 			ctotal.val(resta);
+			$("#civa").val(iva);
+			$("#ccosto").val(campototal);
 		}
 
 		$("#list_item_serv"+id).remove();
@@ -120,10 +144,11 @@ define('MODULO', 500);
 	$("#Ffecha2").datepicker({
 		altField: "#Ffecha",
         altFormat: "yy-mm-dd"
-	});
-	$("#Ffecha2").datepicker( "option", "minDate", "+0d" );
+	});';
+	// VIE requiere registrar cotizaciones o ventas de dias pasados .. por que por las prisas no se registraron y se quieren meter al sistema
+	//$("#Ffecha2").datepicker( "option", "minDate", "+0d" );
 
-	$(".inpservicios").change(function() {
+	$js_extras_onready.='$(".inpservicios").change(function() {
 		ctotal = $("#ctotal").val();
 		if(ctotal != "")
 			ctotal = parseFloat(ctotal);
@@ -152,6 +177,20 @@ define('MODULO', 500);
 		$("#ctotal").val(ctotal);
 		
 	});
+
+	$("#Ffactura").change(function() {
+		if($(this).attr("checked")) {
+			$("#span_ccosto").css("display","");
+			$("#span_civa").css("display","");
+		}else {
+			$("#span_ccosto").css("display","none");
+			$("#span_civa").css("display","none");
+		}
+	});
+
+	$(".sel_nuevo").click(function() {
+		// alert($(this).attr("tipo"))
+	});
 	';
 
 	require_once('includes/conection.php');
@@ -167,6 +206,7 @@ define('MODULO', 500);
 			$filtrar_por_empleado = (isset($id_emp) && $id_emp!='')? " and ev.id_emp=$id_emp " : "";
 			$filtrar_por_servicio = (isset($id_ser) && $id_ser!='')? " and serev.id_ser=$id_ser " : "";
 			$filtrar_por_salon = (isset($id_sal) && $id_sal!='')? " and ev.id_sal=$id_sal " : "";
+			$filtrar_por_tipo_evento = (isset($id_tipo_evento) && (int)$id_tipo_evento>0)? " AND ev.id_tip_eve = ".$id_tipo_evento:"";
 
 			$sql = "select distinct ev.id_eve			
 			, ev.id_tip_eve
@@ -179,6 +219,7 @@ define('MODULO', 500);
 			, sal.nombre salon
 			, concat(cli.nombre, ' ', cli.ape_pat) cliente
 			, tev.nombre tipodeevento
+			, GROUP_CONCAT(serv.nombre SEPARATOR '<br>')servicio
 			, case 
 			when CURDATE() <= ev.fecha then 'VIGENTE'
 			else 'VENCIDA'
@@ -188,13 +229,16 @@ define('MODULO', 500);
 			inner join clientes cli using(id_cli)
 			inner join tipo_evento tev using(id_tip_eve)
 			inner join servicios_eventos serev using(id_eve)
+			inner join servicios serv using(id_ser)
 			where 1=1 
 			and ev.estatus in ('VENDIDO')
 			$filtrar_por_cliente
 			$filtrar_por_empleado
 			$filtrar_por_servicio
 			$filtrar_por_salon
-			order by ev.estatus asc, ev.fecha desc";
+			$filtrar_por_tipo_evento
+			group by id_eve
+			order by ev.estatus asc, ev.fecha";
 		
 			$stid = mysql_query($sql);
 			?>			
@@ -239,7 +283,7 @@ define('MODULO', 500);
 								<td align="right"><label for="Fsalon">Salón: </label></td>
 								<td align="left">
 									<select class="" name="Fsalon" id="Fsalon" req="req" lab="Salón"  >
-										<option value="">seleccione</option>
+										<option value="">Seleccione Salón</option>
 										<?php
 											#Revisamos si estan enviando la cotizacion desde la pagina de salones
 											$id_sal = (isset($id_sal) && $id_sal != '')? $id_sal :'';
@@ -422,15 +466,17 @@ define('MODULO', 500);
 				<div class="scrool" id="cont">
 					<table width="100%" cellspacing="0" cellpadding="3">
 						<tr class="Cabezadefila">
-							<th width="8%">No.</th>
+							<th width="5%">No.</th>
 							<th width="10%">Fecha</th>
-							<th width="7%">Hora</th>
-							<th width="20%">Tipo</th>
-							<th width="20%">Salón</th>
+							<th width="5%">Hora</th>
+							<th width="15%">Tipo</th>
+							<th width="15%">Salón</th>
 							<th width="15%">Cliente</th>
 							<th width="5%">Pagado</th>
-							<th width="5%">Edit</th>
-							<th width="15%">Estatus</th>
+							<th width="20%">Servicios</th>
+							<th width="10%">Estatus</th>
+							<!-- <th width="5%">Edit</th> -->
+							<!-- <th width="5%">Elim</th> -->
 						</tr>
 
 					<?php
@@ -448,6 +494,7 @@ define('MODULO', 500);
 						$hora = $row['hora'];
 						$cliente = $row['cliente'];
 						$estatus = $row['estatus'];
+						$servicio = $row['servicio'];
 																		
 						$ver_evento = '<a class="fiframe" href="eventos_view.php?task=view&id_eve='.$id.'" title="Ver detalles" alt="Ver detalles">'.$noevento.'</a>';
 						$fecha = '<a class="fiframe" href="eventos_view.php?task=view&id_eve='.$id.'" title="Ver detalles" alt="Ver detalles">'.$fecha.'</a>';
@@ -470,15 +517,17 @@ define('MODULO', 500);
 							<td align="left" class="celdaNormal"><?php echo strtoupper($salon); ?></td>
 							<td align="center" class="celdaNormal"><?php echo $cliente; ?></td>
 							<td align="center" class="celdaNormal"><?php echo $pagado; ?></td>
-							<td align="center" class="celdaNormal"><?php echo $editar; ?></td>
+							<td align="left" class="celdaNormal"><?php echo $servicio; ?></td>
 							<td align="center" class="celdaNormal"><?php echo $estatus; ?></td>
+							<!-- <td align="center" class="celdaNormal"><?php echo $editar; ?></td> -->
+							<!-- <td align="center" class="celdaNormal"><?php echo $cancelar; ?></td> -->
 						</tr>
 					<?php
 					}			
 					?>			
 
 						<tr class="Cabezadefila">
-							<td colspan='9'><?php echo $registros; ?> Registros encontrados.</td>
+							<td colspan='10'><?php echo $registros; ?> Registros encontrados.</td>
 						</tr>
 					</table>
 				</div>
@@ -509,9 +558,10 @@ define('MODULO', 500);
 			, ev.cos_tot
 			, ev.facturar
 			, ev.fecha fecha2
+			, ev.observaciones
 			, date_format(ev.fecha, '%d/%m/%y')fecha
 			, date_format(ev.falta, '%d/%m/%y')falta
-			, date_format(ev.hora, '%h')hora
+			, date_format(ev.hora, '%H')hora
 			, date_format(ev.hora, '%i')minuto
 			from eventos ev 
 			left join empleados emp using(id_emp)
@@ -610,9 +660,9 @@ define('MODULO', 500);
 							<td width="70%" valign="top" align="left">
 								<label><span class="required">*</span>SALÓN </label>
 								<select class="" name="Fsalon" id="Fsalon" req="req" lab="Salón"  >
-									<option value="">seleccione</option>
+									<option value="">Seleccione Salón</option>
 									<?php
-										$sql="select id_sal, nombre from salones order by nombre";
+										$sql="select id_sal, nombre from salones where id_est in(1) order by nombre";
 										
 										$stid = mysql_query($sql);
 
@@ -669,7 +719,8 @@ define('MODULO', 500);
 					<h4>Servicios solicitados</h4>
 					<table width="100%" cellpadding="5" cellspacing="0">
 						<tr>
-							<td width="30%" valign="top" align="left">
+							<input name="Ftipoeve" type="hidden" id="Ftipoeve" value="5"/><!-- el ID 5 es UNICO_TIPO -->
+							<!--<td width="30%" valign="top" align="left">
 								<label>TIPO</label>
 								<select class="" name="Ftipoeve" id="Ftipoeve" req="req" lab="Tipo de evento" onchange="carga('servicios', 'selServ');" >
 									<option value="">seleccione</option>
@@ -683,8 +734,9 @@ define('MODULO', 500);
 										}
 									?>
 								</select>
-							</td>
+							</td> -->
 							<td width="40%" valign="top" align="left" id="selServ"></td>
+							<script language="javascript"> carga('servicios', 'selServ'); </script>
 							<td width="30%" valign="top" align="left">
 								<label><span class="required">*</span>COSTO</label>
 								$ <input type="text" name="Fcosto" id="Fcosto" value="" size="10" style="text-align:right;"  onkeypress="return vFlotante(event, this);" />
@@ -697,7 +749,7 @@ define('MODULO', 500);
 								$sql="select ser.id_ser, ser.nombre, (select 1 from servicios_eventos seev where seev.id_ser=ser.id_ser and seev.id_eve=".$id.")contratado
 								,(select seev.costo from servicios_eventos seev where seev.id_ser=ser.id_ser and seev.id_eve=".$id." )costo
 								from servicios ser
-								where 1
+								where id_est in(1)
 								order by nombre";
 								$stidSer = mysql_query($sql);
 
@@ -730,10 +782,30 @@ define('MODULO', 500);
 					<hr class="bleed-flush compact" />
 
 					<h4>Costo Total del evento</h4>
-					<table width="50%" cellpadding="5" cellspacing="0" border="0">
+					<table width="100%" cellpadding="5" cellspacing="0" border="0">
 						<tr>							
 							<td width="100%" align="right">
-								TOTAL $ <input type="text" name="ctotal" id="ctotal" value="<?php echo $list_ctotal ?>" size="15" style="text-align:right;border-color:#FF353B;" readonly="readonly" req="req" lab="Costo" />
+								<?php 
+									$iva = $list_ctotal * 0.16;
+									$campototal = $list_ctotal + $iva;
+									$list_ctotal = number_format($list_ctotal,2);
+									$iva = number_format($iva,2);
+									$campototal = number_format($campototal,2);
+								?>
+								COSTO $ <input type="text" name="ctotal" id="ctotal" value="<?php echo $list_ctotal ?>" size="15" style="text-align:right;border:solid 2px #333;" readonly="readonly" req="req" lab="Costo" />
+								<span class="cajitas" id="span_civa" style="display:none;">IVA $ <input type="text" name="civa" id="civa" value="<?php echo $iva ?>" size="15" style="text-align:right;border:solid 2px #333;" readonly="readonly" req="req" lab="IVA" /></span>
+								<span class="cajitas" id="span_ccosto" style="display:none;">TOTAL $ <input type="text" name="ccosto" id="ccosto" value="<?php echo $campototal ?>" size="15" style="text-align:right;border:solid 2px #333;" readonly="readonly" req="req" lab="Total" /></span>
+							</td>
+						</tr>
+					</table>
+					<hr class="bleed-flush compact" />
+
+					<h4>OBSERVACIONES</h4>
+					<table width="100%" cellpadding="5" cellspacing="0" border="0">
+						<tr>
+							<td width="100%" align="center">
+								<textarea name="Fobservaciones" id="Fnotas" cols="40" rows="5" style="width:450px" onkeypress="return vAbierta(event, this);"><?php echo $row['observaciones'] ?></textarea>
+								<div class="avisorequired"><span class="required">Esta información se usará en la impresión de la cotización</span></div>
 							</td>
 						</tr>
 					</table>
@@ -751,6 +823,19 @@ define('MODULO', 500);
 					</table>
 				</form>
 			</div>
+			<script type="text/javascript">
+				$(document).ready(function() {
+					<?php if(isset($row['facturar']) && $row['facturar']=='1') { ?>
+					$("#Ffactura").attr("checked","checked");
+					$("#span_ccosto").css("display","");
+					$("#span_civa").css("display","");
+					<?php }else { ?>
+					$("#Ffactura").removeAttr("checked");
+					<?php } ?>
+
+				});
+
+			</script>
 		<?php
 		break;
 		case 'add': #- - - - - - - - - - - - - - -- - - AGREGAR
@@ -771,8 +856,9 @@ define('MODULO', 500);
 								<label><span class="required">*</span>HORA </label>
 								<select name="Fhora" id="Fhora"  req="req" lab="Hora del evento">
 									<option value="">--</option>
+									<option value="00" selected="selected">00</option>
 									<?php
-										$conta=0;
+										$conta=1;
 										$cadena='';
 										
 										while ($conta < 24) {
@@ -811,23 +897,29 @@ define('MODULO', 500);
 								<input type="text" name="Fpersonas" id="Fpersonas" size="6" value="" onkeypress="return vNumeros(event, this);" />
 							</td>
 							<td valign="top" align="left">
-								<label><span class="required">*</span>SALÓN <a class="sel_nuevo" href="salones.php?task=add">Nuevo</a></label>
-								<select class="" name="Fsalon" id="Fsalon" req="req" lab="Salón"  >
-									<option value="">seleccione</option>
+								<label><span class="required">*</span>SALÓN 
+									<a class="fiframe sel_nuevo" href="iframe.php?tipo=salones">Nuevo</a>
+									<!-- <a class="fiframe sel_nuevo" href="iframe.php?" >Nuevo</a> -->
+									<!-- onclick="carga_iframe('add_script','salones','add')" -->
+								</label>
+								<div id="div_select_salones">
+									<select class="" name="Fsalon" id="Fsalon" req="req" lab="Salón"  >
+									<option value="">Seleccione Salón</option>
 									<?php
-										$sql="select id_sal, nombre from salones order by nombre";
-										
-										$stid = mysql_query($sql);
+										$sql="select id_sal, nombre from salones where id_est in(1) order by nombre";
+											
+											$stid = mysql_query($sql);
 
-										while (($rowPer = mysql_fetch_assoc($stid))) {
-											if( $rowPer['id_sal'] == $row['id_sal']) {
-												echo '	<option selected="selected" value="'.$rowPer['id_sal'].'">'.$rowPer['nombre'].'</option>';
-											}else{	
-												echo '	<option value="'.$rowPer['id_sal'].'">'.$rowPer['nombre'].'</option>';
+											while (($rowPer = mysql_fetch_assoc($stid))) {
+												if( $rowPer['id_sal'] == $row['id_sal']) {
+													echo '	<option selected="selected" value="'.$rowPer['id_sal'].'">'.$rowPer['nombre'].'</option>';
+												}else{	
+													echo '	<option value="'.$rowPer['id_sal'].'">'.$rowPer['nombre'].'</option>';
+												}
 											}
-										}
-									?>
-								</select>
+										?>
+									</select>
+								</div>
 								
 							</td>
 						</tr>
@@ -843,26 +935,30 @@ define('MODULO', 500);
 							</td>
 							<td>
 							<td width="60%" valign="top" align="left">
-								<label><span class="required">*</span>CLIENTE <a class="sel_nuevo" href="clientes.php?task=add">Nuevo</a></label>
-								<select class="" name="Fcliente" id="Fcliente" req="req" lab="Cliente" >
-									<option value="">...</option>
-									<?php
-										$id_cli = (isset($id_cli) && $id_cli != '')? $id_cli :'';
+								<label><span class="required">*</span>CLIENTE 
+									<!-- <a class="sel_nuevo" href="#" onclick="carga_iframe('add_script','clientes','add')" >Nuevo</a> -->
+									<a class="fiframe sel_nuevo" href="iframe.php?tipo=clientes">Nuevo</a>
+								</label>
+								<div id="div_select_clientes">
+									<select class="" name="Fcliente" id="Fcliente" req="req" lab="Cliente" >
+										<option value="">...</option>
+										<?php
+											$id_cli = (isset($id_cli) && $id_cli != '')? $id_cli :'';
 
-										$sql="select id_cli, concat(nombre, ' ', ape_pat, ' ', ape_mat)nombre from clientes where id_est in(1) order by nombre";
-										
-										$stid = mysql_query($sql);
+											$sql="select id_cli, concat(nombre, ' ', ape_pat, ' ', ape_mat)nombre from clientes where id_est in(1) order by nombre";
+											
+											$stid = mysql_query($sql);
 
-										while (($rowPer = mysql_fetch_assoc($stid))) {
-											if( $rowPer['id_cli'] == $id_cli) {
-												echo '	<option selected="selected" value="'.$rowPer['id_cli'].'">'.$rowPer['nombre'].'</option>';
-											}else{	
-												echo '	<option value="'.$rowPer['id_cli'].'">'.$rowPer['nombre'].'</option>';
+											while (($rowPer = mysql_fetch_assoc($stid))) {
+												if( $rowPer['id_cli'] == $id_cli) {
+													echo '	<option selected="selected" value="'.$rowPer['id_cli'].'">'.$rowPer['nombre'].'</option>';
+												}else{	
+													echo '	<option value="'.$rowPer['id_cli'].'">'.$rowPer['nombre'].'</option>';
+												}
 											}
-										}
-									?>
-								</select>
-								
+										?>
+									</select>
+								</div>
 							</td>
 						</tr>
 					</table>
@@ -882,7 +978,8 @@ define('MODULO', 500);
 					<h4>Servicios solicitados</h4>
 					<table width="100%" cellpadding="5" cellspacing="0">
 						<tr>
-							<td width="30%" valign="top" align="left">
+							<input name="Ftipoeve" type="hidden" id="Ftipoeve" value="5"/><!-- el ID 5 es UNICO_TIPO -->
+							<!--<td width="30%" valign="top" align="left">
 								<label>TIPO</label>
 								<select class="" name="Ftipoeve" id="Ftipoeve" req="req" lab="Tipo de evento" onchange="carga('servicios', 'selServ');" >
 									<option value="">seleccione</option>
@@ -896,8 +993,9 @@ define('MODULO', 500);
 										}
 									?>
 								</select>
-							</td>
+							</td> -->
 							<td width="40%" valign="top" align="left" id="selServ"></td>
+							<script language="javascript"> carga('servicios', 'selServ'); </script>
 							<td width="30%" valign="top" align="left">
 								<label><span class="required">*</span>COSTO</label>
 								$ <input type="text" name="Fcosto" id="Fcosto" value="" size="10" style="text-align:right;"  onkeypress="return vFlotante(event, this);" />
@@ -912,10 +1010,37 @@ define('MODULO', 500);
 					<hr class="bleed-flush compact" />
 
 					<h4>COSTO TOTAL DEL EVENTO</h4>
-					<table width="50%" cellpadding="5" cellspacing="0" border="0">
+					<table width="100%" cellpadding="5" cellspacing="0" border="0">
 						<tr>
 							<td width="100%" align="right">
-								TOTAL $ <input type="text" name="ctotal" id="ctotal" value="" size="15" style="text-align:right;border-color:#FF353B;" readonly="readonly" req="req" lab="Costo" />
+								COSTO $ <input type="text" name="ctotal" id="ctotal" value="" size="15" style="text-align:right;border:solid 2px #333;" readonly="readonly" req="req" lab="Costo" />
+								<span class="cajitas" id="span_civa" style="display:none;">IVA $ <input type="text" name="civa" id="civa" value="" size="15" style="text-align:right;border:solid 2px #333;" readonly="readonly" req="req" lab="IVA" /></span>
+								<span class="cajitas" id="span_ccosto" style="display:none;">TOTAL $ <input type="text" name="ccosto" id="ccosto" value="" size="15" style="text-align:right;border:solid 2px #333;" readonly="readonly" req="req" lab="Total" /></span>
+							</td>
+						</tr>
+					</table>
+					<hr class="bleed-flush compact" />
+
+					<h4>OBSERVACIONES</h4>
+					<table width="100%" cellpadding="5" cellspacing="0" border="0">
+						<tr>
+							<td width="100%" align="center">
+								<textarea name="Fobservaciones" id="Fnotas" cols="40" rows="5" style="width:450px" onkeypress="return vAbierta(event, this);">
+* Forma de pago: 50% del total al reservar los servicios y firmar el contrato respectivo, y el 50% restante a más tardar dentro de los 7 días naturales posteriores al evento. 
+* Se considera realizar la mayor parte del montaje una tarde anterior al evento e iniciar el desmontaje una vez finalizado Se considera realizar la mayor parte del montaje una tarde anterior al evento e iniciar el desmontaje una vez finalizado el mismo.
+</textarea>
+								<div class="avisorequired"><span class="required">Esta información se usará en la impresión de la cotización</span></div>
+							</td>
+						</tr>
+					</table>
+					<hr class="bleed-flush compact" />
+
+					<h4>AGREGAR NOTA AL EVENTO</h4>
+					<table width="100%" cellpadding="5" cellspacing="0" border="0">
+						<tr>
+							<td width="100%" align="center">
+								<textarea name="Fnotas" id="Fnotas" cols="40" rows="5" style="width:450px" onkeypress="return vAbierta(event, this);"></textarea>
+								<div class="avisorequired"><span class="required">Esta información es de uso interno.</span></div>
 							</td>
 						</tr>
 					</table>
@@ -934,6 +1059,7 @@ define('MODULO', 500);
 					</table>
 				</form>
 			</div>
+
 		<?php
 		break;
 	}// switch

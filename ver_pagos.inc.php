@@ -20,7 +20,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 	, ev.num_personas personas
 	, ev.pagado
 	, ev.estatus
-	, ev.cos_tot
+	, ev.cos_tot, ev.cos_tot*0.16 iva
 	, sal.nombre salon
 	, concat(cli.nombre, ' ', cli.ape_pat) cliente
 	, tev.nombre tipodeevento
@@ -40,6 +40,9 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 		$fecha = $row['fecha'];
 		$Fnumpago = $row['Fnumpago'];
 		$cos_tot = number_format($row['cos_tot'],2);
+		$cos_iva = number_format($row['iva'],2);
+		$cos_total = $row['cos_tot'] + $row['iva'];
+		$cos_total = number_format($cos_total,2);
 		$facturar = (isset($row['facturar']) && $row['facturar']=='1')?'SÍ':'NO';
 		$cap_subtotal = (isset($row['facturar']) && $row['facturar']=='0')?true:false;
 		$cap_total = (isset($row['facturar']) && $row['facturar']=='1')?true:false;
@@ -47,11 +50,14 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 		$estatus = $row['estatus'];
 		$pagado = $row['pagado'];
 
-		if($estatus != 'VENDIDO'){
-			echo '<p>El evento debe ser vendido para poder agregar pagos.</p>';
+		// linea funcional al 29012013
+		// if($estatus != 'VENDIDO'){
+		if($estatus != 'VENDIDO' and $estatus != 'TERMINADO'){
+			echo '<p>El evento debe ser vendido o terminado para poder agregar pagos.</p>';
 			exit;
 		}
-		elseif($pagado==1){
+		
+		if($pagado==1){
 			echo '<p>Este evento ya ha sido pagado.</p>';
 			exit;
 		}
@@ -59,16 +65,22 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 	<table width="100%" cellspacing="0" cellpadding="3">
 		<tr class="Cabezadefila">
 			<th width="10%">FECHA</th>
-			<th width="30%">TIPO</th>
-			<th width="40%">CLIENTE</th>
+			<th width="20%">TIPO</th>
+			<th width="30%">CLIENTE</th>
 			<th width="10%">COSTO</th>
+			<?php
+				echo $imprime_iva_total = (isset($row['facturar']) && $row['facturar']=='1')?'<th width="10%">IVA</th><th width="10%">TOTAL</th>':' ';
+			?>
 			<th width="10%">FACTURAR</th>
 		</tr>
-		<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" id="row<?php echo $id; ?>">
+		<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" >
 			<td align="center" class="celdaNormal"><?php echo $fecha; ?></td>
 			<td align="center" class="celdaNormal"><?php echo $tipodeevento; ?></td>
 			<td align="center" class="celdaNormal"><?php echo $cliente; ?></td>
 			<td align="center" class="celdaNormal">$ <?php echo $cos_tot; ?></td>
+			<?php
+				echo $imprime_iva_total = (isset($row['facturar']) && $row['facturar']=='1')?'<th width="10%">'.$cos_iva.'</th><th width="10%">'.$cos_total.'</th>':' ';
+			?>
 			<td align="center" class="celdaNormal"><?php echo $facturar; ?></td>
 		</tr>
 	</table>
@@ -76,7 +88,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 
 	<h4>Información de Pagos</h4>
 	<table width="100%" cellpadding="5" cellspacing="0">
-		<tr>
+		<tr class="Cabezadefila">
 			<th width="5%" >No.</th>
 			<th>FECHA</th>
 			<th>TIPO</th>
@@ -91,18 +103,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 		</tr>
 		<?php
 		$sql="
-		select 
-		pa.id_pag
-		, pa.id_eve
-		, pa.num_pago
-		, pa.subtotal
-		, pa.iva
-		, pa.total
-		, pa.id_tip_pag
-		, pa.id_est estatus
-		, date_format(pa.fec_pag, '%d/%m/%Y')fecha
-		, pa.fec_pag fecha2
-		, tp.nombre tipodepago
+		select pa.id_pag, pa.id_eve , pa.num_pago , pa.subtotal , pa.iva, pa.total, pa.id_tip_pag, pa.id_est estatus, date_format(pa.fec_pag, '%d/%m/%Y')fecha, pa.fec_pag fecha2, tp.nombre tipodepago
 		from pagos pa
 		inner join tipo_pago tp using(id_tip_pag)
 		WHERE 1=1 and pa.id_est = 1 and pa.id_eve=".$Fnoevento." order by num_pago";
@@ -115,7 +116,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 			$tmp_iva = number_format($rowP['iva'], 2);
 			$tmp_total = number_format($rowP['total'], 2);
 		?>
-		<tr>
+		<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" >
 			<td valign="top" align="left" class="vdato"><?php echo $rowP['num_pago'] ?></td>
 			<td valign="top" align="left" class="vdato"><?php echo $rowP['fecha'] ?></td>
 			<td valign="top" align="left" class="vdato"><?php echo $rowP['tipodepago'] ?></td>
@@ -150,14 +151,14 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 	<?php 
 	if($cap_total) { ?>
 		$("#Fsubtotal").attr('readonly','readonly');
-		$("#Ftotal").removeAttr('disabled');
-		$("#Fiva").removeAttr('disabled');
+		$("#Fiva").attr('readonly','readonly');
+		$("#Ftotal").removeAttr('readonly');
 	<?php 
 	}else {
 	?>
 		$("#Fsubtotal").removeAttr('readonly');
-		$("#Ftotal").attr('disabled','disabled');
-		$("#Fiva").attr('disabled','disabled');
+		$("#Ftotal").attr('readonly','readonly');
+		$("#Fiva").attr('readonly','readonly');
 	<?php
 	} 
 	?>	

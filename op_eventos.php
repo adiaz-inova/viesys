@@ -48,7 +48,7 @@ define('MODULO', 500);
 			foreach ($Fcosto as $costo) {
 				$cos_total += $costo;
 			}
-			
+			$cos_total_original = $cos_total;
 			$cos_total = number_format($cos_total, 2, '.', ''); # muy importante formatear flotantes 
 			$Festatus = (isset($Festatus) && $Festatus!='')? " , id_est=".$Festatus." ":""; 
 			$Ffactura = (isset($Ffactura) && $Ffactura=='1')?'1':'0';
@@ -58,7 +58,7 @@ define('MODULO', 500);
 			$qry = "
 			UPDATE eventos SET id_cli=".$Fcliente.", id_sal=".$Fsalon."
 			, id_tip_eve=".$Ftipo.", fecha='".$Ffecha."', hora='".$Fhora.":".$Fminuto."', num_personas=".$num_personas."
-			$Festatus, cos_tot='".$cos_total."', facturar='".$Ffactura."'
+			$Festatus, cos_tot='".$cos_total."', facturar='".$Ffactura."', observaciones='".$Fobservaciones."'
 			WHERE id_eve=".$Fid;
 			
 			$stid = mysql_query($qry);
@@ -88,7 +88,24 @@ define('MODULO', 500);
 				$stid = mysql_query($qryNotas);
 			}
 
+
+
+			// -------------------------------------------------------
+			#despues de agregar el pago vamos a validar si ya se completo el pago del evento
+			$sqltotal = "select sum(total)pagado from pagos where id_est=1 and id_eve=".$Fid;
+			$stidtotal = mysql_query($sqltotal);
+			$row_total = mysql_fetch_assoc($stidtotal);
+			
+			if($cos_total <= $row_total['pagado']) {
+				$sql = "UPDATE eventos set pagado='1' WHERE id_eve=".$Fid." AND estatus='VENDIDO'";
+			}
+			else {
+				$sql = "UPDATE eventos set pagado='0' WHERE id_eve=".$Fid." AND estatus='VENDIDO'";
+			}
+
+			mysql_query($sql);
 			mysql_close($conn);
+
 			exit;
 
 		break;
@@ -108,8 +125,8 @@ define('MODULO', 500);
 			# UN EVENTO NUEVO ENTRA COMO COTIZADO
 			$Festatus = 11;
 			
-			echo $qry = "INSERT INTO eventos(id_emp, id_cli, estatus, id_sal, id_tip_eve, fecha, hora, num_personas, cos_tot, falta, facturar) 
-					VALUES (".$_SESSION[TOKEN.'USUARIO_ID'].", ".$Fcliente.", 'COTIZADO', ".$Fsalon.", ".$Ftipo.", '".$Ffecha."', '".$Fhora.":".$Fminuto."', ".$num_personas.", '".formateo($cos_total)."', now(), '".$Ffactura."')";
+			$qry = "INSERT INTO eventos(id_emp, id_cli, estatus, id_sal, id_tip_eve, fecha, hora, num_personas, cos_tot, falta, facturar, observaciones) 
+					VALUES (".$_SESSION[TOKEN.'USUARIO_ID'].", ".$Fcliente.", 'COTIZADO', ".$Fsalon.", ".$Ftipo.", '".$Ffecha."', '".$Fhora.":".$Fminuto."', ".$num_personas.", '".formateo($cos_total)."', now(), '".$Ffactura."', '".$Fobservaciones."')";
 			
 			$stid = mysql_query($qry);
 			$Fid = mysql_insert_id();
@@ -125,7 +142,14 @@ define('MODULO', 500);
 				$i++;
 				}
 
-			}				
+			}
+
+			#NOTA
+			if(isset($Fnotas) and $Fnotas!='') {
+				$qry = "insert into eventos_notas (id_eve, notas, falta, id_emp) values($Fid, '$Fnotas', now(), ".$_SESSION[TOKEN.'USUARIO_ID'].")";
+				$stid = mysql_query($qry);
+			}
+
 
 			echo 1;
 			mysql_close($conn);

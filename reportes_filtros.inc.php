@@ -156,22 +156,23 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 									</select>
 								</td>
 							</tr>
-							<tr>
+							<input type="hidden" name="Ftiposer" id="Ftiposer" value="5">
+							<!-- <tr>
 								<td align="right"><label for="Ftiposer">Tipo de servicio: </label></td>
 								<td align="left">
 									<select name="Ftiposer" id="Ftiposer" req="" lb="Tipo de evento" >
-										<option value="">...</option>
+										<option value="5">TODOS</option>
 										<?php
-										$sql="select id_tip_ser, nombre from tipo_servicio order by nombre";
+										/*$sql="select id_tip_ser, nombre from tipo_servicio order by nombre";
 										$stid = mysql_query($sql);
 
 										while (($rowPer = mysql_fetch_assoc($stid))) {
 											echo '	<option value="'.$rowPer['id_tip_ser'].'">'.$rowPer['nombre'].'</option>';
-										}
+										}*/
 									?>
 									</select>
 								</td>
-							</tr>
+							</tr> -->
 							<tr>
 								<td align="right"><label for="Fservicio">Servicio: </label></td>
 								<td align="left">

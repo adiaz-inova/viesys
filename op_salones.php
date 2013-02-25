@@ -17,14 +17,14 @@ define('MODULO', 300);
 			$Fporc = (isset($Fporc) && $Fporc != '')? ', porcentaje='.$Fporc : ', porcentaje=null';
 
 		 	$qry = "UPDATE salones SET empresa=UPPER('$Fempresa'), nombre=UPPER('$Fnombre'), responsable=UPPER('".$Fresponsable."')
-					, tel = '".$Ftel."', email=LOWER('".$Femail."'), dir=UPPER('".$Fdireccion."'), id_est=".$Festatus.$Fporc." WHERE id_sal = ".$Fid;
+					, tel = '".$Ftel."', tel2 = '".$Ftel2."', email=LOWER('".$Femail."'), dir=UPPER('".$Fdireccion."'), id_est=".$Festatus.$Fporc." WHERE id_sal = ".$Fid;
 
 		break;
 		case 'add':
 			
 			$Fporc = (isset($Fporc) && $Fporc != '')? $Fporc : 'null';
-			$qry = "INSERT INTO salones ( empresa, nombre, responsable, fec_ingreso, tel, email, dir, id_est, porcentaje)
-			VALUES (UPPER('".$Fempresa."'), UPPER('".$Fnombre."'), UPPER('".$Fresponsable."'), now(), '".$Ftel."', LOWER('".$Femail."'), UPPER('".$Fdireccion."'), 1, $Fporc)";
+			$qry = "INSERT INTO salones ( empresa, nombre, responsable, fec_ingreso, tel, tel2, email, dir, id_est, porcentaje)
+			VALUES (UPPER('".$Fempresa."'), UPPER('".$Fnombre."'), UPPER('".$Fresponsable."'), now(), '".$Ftel."', '".$Ftel2."', LOWER('".$Femail."'), UPPER('".$Fdireccion."'), 1, $Fporc)";
 		
 		break;
 	}

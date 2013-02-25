@@ -65,8 +65,8 @@ define('MODULO', 400);
 						<tr class="Cabezadefila">
 							<th width="5%">#</th>
 							<th width="40%">Servicio</th>
-							<th width="30%">Tipo</th>
-							<th width="5%">Acción</th>
+							<!--<th width="30%">Tipo</th> -->
+							<!--<th width="5%">Acción</th> -->
 							<th width="5%">Cotizaciones</th>
 							<th width="5%">Eventos</th>
 							<th width="5%">Edit</th>
@@ -91,8 +91,8 @@ define('MODULO', 400);
 						<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" id="row<?php echo $id; ?>">
 							<td align="center" class="celdaNormal"><?php echo $registros; ?></td>
 							<td align="left" class="celdaNormal"><a href="servicios.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $salon; ?></a></td>
-							<td align="left" class="celdaNormal"><?php echo $tipo; ?></td>
-							<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
+							<!--<td align="left" class="celdaNormal"><?php echo $tipo; ?></td> -->
+							<!--<td align="center" class="celdaNormal"><?php echo $accion; ?></td> -->
 							<td align="center" class="celdaNormal"><a href="cotizaciones.php?id_ser=<?php echo $id; ?>">VER</a></td>
 							<td align="center" class="celdaNormal"><a href="eventos.php?id_ser=<?php echo $id; ?>">VER</a></td>
 							<td align="center" class="celdaNormal"><a href="servicios.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
@@ -145,12 +145,12 @@ define('MODULO', 400);
 								<label><span class="required">*</span>SERVICIO </label>
 								<input  name="Fnombre" type="text" id="Fnombre" value="<?php echo $row['nombre']; ?>" size="50" maxlength="50" onkeypress="return vAbierta(event, this);" req="req" lab="Nombre del servicio" />
 							</td>
-							<td width="50%" align="left">
+							<!--<td width="50%" align="left">
 								<label><span class="required">*</span>TIPO </label>
-								<select name="Ftipo" id="Ftipo"  req="req" lab="Tipo de servicio" />>
+								<select name="Ftipo" id="Ftipo"  req="req" lab="Tipo de servicio" /> -->
 									<!--option value="">seleccione</option-->
 								<?php
-									$sql="select id_tip_ser, nombre from tipo_servicio order by nombre";
+									/*$sql="select id_tip_ser, nombre from tipo_servicio order by nombre";
 									
 									$stid = mysql_query($sql);
 
@@ -160,16 +160,19 @@ define('MODULO', 400);
 										}else{	
 											echo '	<option value="'.$rowPer['id_tip_ser'].'">'.$rowPer['nombre'].'</option>';
 										}
-									}
+									}*/
 								?>
 								</select>
-							</td>
+							<!--</td> -->
 						</tr>
 					</table>
 					<input name="Fid" type="hidden" id="Fid" value="<?php echo $id; ?>"/>
+					<input name="Ftipo" type="hidden" id="Ftipo" value="5"/><!-- el ID 5 es UNICO_TIPO -->
+					<input name="Fdireccion" type="hidden" id="Fdireccion" value=" "/><!-- no quisieron estos campos .. los mandare vacios -->
+					<input name="Femail" type="hidden" id="Femail" value="0"/><!-- no quisieron estos campos .. los mandare vacios -->
 					<hr class="bleed-flush compact" />
 
-					<h4>Acerca del Contacto</h4>
+					<!--<h4>Acerca del Contacto</h4>
 					<table width="100%" cellpadding="5" cellspacing="0">
 						<tr>
 							<td align="left" colspan="2">
@@ -179,11 +182,11 @@ define('MODULO', 400);
 						</tr>
 						<tr>
 							<td align="left" colspan="2">
-								<label><!--span class="required">*</span-->EMAIL </label>
+								<label>--><!--span class="required">*</span>--><!--EMAIL </label>
 								<input  name="Femail" type="text" id="Femail" value="<?php echo $row['email']; ?>" size="25" maxlength="60" />
 							</td>
 						</tr>
-					</table>				
+					</table>	-->			
 					<hr class="bleed-flush compact">
 
 					<h4>Estatus</h4>
@@ -238,26 +241,29 @@ define('MODULO', 400);
 								<label><span class="required">*</span>SERVICIO </label>
 								<input  name="Fnombre" type="text" id="Fnombre" value="" size="50" maxlength="50" onkeypress="return vAbierta(event, this);" req="req" lab="Nombre del servicio" />
 							</td>
-							<td width="50%" align="left">
+							<!--<td width="50%" align="left">
 								<label><span class="required">*</span>TIPO </label>
 								<select name="Ftipo" id="Ftipo"  req="req" lab="Tipo de servicio" />
 									<option value="">seleccione</option>
 								<?php
-									$sql="select id_tip_ser, nombre from tipo_servicio order by nombre";
+									/*$sql="select id_tip_ser, nombre from tipo_servicio order by nombre";
 									
 									$stid = mysql_query($sql);
 
 									while (($rowPer = mysql_fetch_assoc($stid))) {
 										echo '	<option value="'.$rowPer['id_tip_ser'].'">'.$rowPer['nombre'].'</option>';
-									}
+									}*/
 								?>
 								</select>
-							</td>
+							</td> -->
+						<input name="Ftipo" type="hidden" id="Ftipo" value="5"/><!-- el ID 5 es UNICO_TIPO -->
+						<input name="Fdireccion" type="hidden" id="Fdireccion" value=" "/><!-- no quisieron estos campos .. los mandare vacios -->
+						<input name="Femail" type="hidden" id="Femail" value="0"/><!-- no quisieron estos campos .. los mandare vacios -->
 						</tr>
 					</table>
 					<hr class="bleed-flush compact" />
 
-					<h4>Acerca del Contacto</h4>
+					<!-- <h4>Acerca del Contacto</h4>
 					<table width="100%" cellpadding="5" cellspacing="0">
 						<tr>
 							<td align="left" colspan="2">
@@ -267,11 +273,11 @@ define('MODULO', 400);
 						</tr>
 						<tr>
 							<td align="left" colspan="2">
-								<label><!--span class="required">*</span-->EMAIL </label>
+								<label>--><!--span class="required">*</span--><!--EMAIL </label>
 								<input  name="Femail" type="text" id="Femail" value="" size="25" maxlength="60" />
 							</td>
 						</tr>
-					</table>				
+					</table>				-->
 					<hr class="bleed-flush compact">
 
 					<table width="100%" cellpadding="3" cellspacing="3" align="center">

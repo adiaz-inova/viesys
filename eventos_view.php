@@ -33,12 +33,14 @@ define('MODULO', 500);
 	, ev.estatus
 	, ev.cos_tot
 	, ev.fecha fecha2
+	, ev.observaciones
 	, date_format(ev.fecha, '%d/%m/%Y')fecha
 	, date_format(ev.falta, '%d/%m/%Y')falta
-	, date_format(ev.hora, '%h')hora
+	, date_format(ev.hora, '%H')hora
 	, date_format(ev.hora, '%i')minuto
 	, teve.nombre tipodeevento
 	, sal.nombre salon
+	, cli.email
 	, concat(cli.nombre, ' ', cli.ape_pat, ' ', cli.ape_mat)cliente
 	, concat(emp.nombre, ' ', emp.ape_pat, ' ', emp.ape_mat)vendedor
 	, case 
@@ -59,6 +61,7 @@ define('MODULO', 500);
 	$noevento = str_pad($id, 4, '0', STR_PAD_LEFT );
 	$reqfactura = (isset($row['facturar']) && $row['facturar']=='1')?'SÍ':'NO';
 	$pagado = (isset($row['pagado']) && $row['pagado']==0)? 'NO' : 'SI';
+	$email = (isset($row['email']) && $row['email']!='')? $row['email'] : '';
 	?>
 	<script type="text/javascript">
 	$(document).ready(function() {
@@ -123,7 +126,7 @@ define('MODULO', 500);
 			<table width="100%" cellpadding="5" cellspacing="0">
 				<tr>
 					<th width="30%" valign="top" align="left">SERVICIO</th>
-					<th width="40%" valign="top" align="left">TIPO</th>
+					<!--<th width="40%" valign="top" align="left">TIPO</th> -->
 					<th width="30%" valign="top" align="left">COSTO</th>
 				</tr>
 				<?php
@@ -155,7 +158,7 @@ define('MODULO', 500);
 							echo '
 				<tr>
 					<td valign="top" align="left"><span class="vdato">'.$list_id_nombre .'</span></td>
-					<td valign="top" align="left"><span class="vdato">'.$list_tipo_servicios.'</span></td>
+					<!--<td valign="top" align="left"><span class="vdato">'.$list_tipo_servicios.'</span></td> -->
 					<td valign="top" align="right"><span class="vdato">'.$list_servicios_costo.'</span></td>
 				</tr>';
 
@@ -170,8 +173,11 @@ define('MODULO', 500);
 				</tr>';
 					}
 				?>
-				<?php if($reqfactura=='NO') { ?>
-				<tr>
+				<?php if($reqfactura=='NO') {
+					$iva = 0;
+					$total = $list_ctotal;
+				 ?>
+				 <tr>
 					<td colspan="2" align="right">TOTAL</td>
 					<td valign="top" align="right"><span class="vdato">$ <?php echo number_format($list_ctotal, 2); ?></span></td>
 				</tr>
@@ -197,6 +203,18 @@ define('MODULO', 500);
 			</table>
 			<hr class="bleed-flush compact" />
 
+			<h4>Observaciones</h4>
+			<table width="100%" cellpadding="5" cellspacing="0" border="0">
+				<tr>
+					<td align="center">
+						<div class="vdato" style="border: 1px solid #ddd;padding:5px;text-align:justify;">
+						<?php echo str_ireplace("\n", "<br>", $row['observaciones']); ?>
+						</div>
+					</td>
+				</tr>
+			</table>
+			<hr class="bleed-flush compact" />
+
 			<h4>Información de Pagos</h4>
 			<table width="100%" cellpadding="5" cellspacing="0">
 				<tr>
@@ -206,6 +224,7 @@ define('MODULO', 500);
 					<th>SUBTOTAL</th>
 					<th>IVA</th>
 					<th>TOTAL</th>
+					<th>RESTA</th>
 				</tr>
 				<?php
 				$sql="
@@ -220,6 +239,7 @@ define('MODULO', 500);
 					, pa.id_est estatus
 					, date_format(pa.fec_pag, '%d/%m/%Y')fecha
 					, pa.fec_pag fecha2
+					, if(tp.nombre='OTRO',pa.tip_pag_otro,tp.nombre)tipo
 					, tp.nombre tipodepago
 					from pagos pa
 					inner join tipo_pago tp using(id_tip_pag)
@@ -230,19 +250,26 @@ define('MODULO', 500);
 				$suma_subtotal=0;
 				$suma_iva=0;
 				$suma_total=0;
+				$list_adeudo=(isset($list_ctotal))?$list_ctotal:0;
+				$list_adeudo_iva=(isset($iva))?$iva:0;
+				$list_adeudo_total=(isset($total))?$total:0;
 				while($rowP = mysql_fetch_assoc($stid)) {
 					$registros_pagos++;
 					$suma_subtotal+= $rowP['subtotal'];
 					$suma_iva+= $rowP['iva'];
 					$suma_total+= $rowP['total'];
+					$list_adeudo-=$rowP['subtotal'];
+					$list_adeudo_iva-=$rowP['iva'];
+					$list_adeudo_total-=$rowP['total'];
 				?>
 				<tr>
 					<td valign="top" align="left" class="vdato"><?php echo $rowP['num_pago'] ?></td>
 					<td valign="top" align="left" class="vdato"><?php echo $rowP['fecha'] ?></td>
-					<td valign="top" align="left" class="vdato"><?php echo $rowP['tipodepago'] ?></td>
+					<td valign="top" align="left" class="vdato"><?php echo $rowP['tipo'] ?></td>
 					<td valign="top" align="right" class="vdato"><?php echo $rowP['subtotal'] ?></td>
 					<td valign="top" align="right" class="vdato"><?php echo $rowP['iva'] ?></td>
 					<td valign="top" align="right" class="vdato"><?php echo $rowP['total'] ?></td>
+					<td valign="top" align="right" class="vdato"><?php echo number_format($list_adeudo_total,2); ?></td>
 				</tr>
 				<?php
 				}
@@ -260,12 +287,18 @@ define('MODULO', 500);
 					<td valign="top" align="right" class="vdato"><?php echo number_format($suma_iva,2); ?></td>
 					<td valign="top" align="right" class="vdato"><?php echo number_format($suma_total,2); ?></td>
 				</tr>
+				<tr>
+					<td valign="top" align="right" class="num_rojos" colspan="3">SALDO X PAGAR</td>
+					<td valign="top" align="right" class="vdato"><?php echo number_format($list_adeudo,2); ?></td>
+					<td valign="top" align="right" class="vdato"><?php echo number_format($list_adeudo_iva,2); ?></td>
+					<td valign="top" align="right" class="vdato"><?php echo number_format($list_adeudo_total,2); ?></td>
+				</tr>
 				<?php
 				}//else
 				$notas = '<input type="button" class="ch_eve_notas" value="VER NOTAS" />';
 				
 				$cancelar = (isset($row['estatus']) && $row['estatus']=='VENDIDO')?'<input type="button" onclick="cambiarest(this);" tipo="cancel" identif="'.$id.'" value="CANCELAR EVENTO" lab="cancelado" />':'';
-				$pagar = (isset($row['pagado']) && $row['pagado']==0 && $row['estatus']=='VENDIDO')?'<input type="button" href="pagos.php?task=add&id_eve='.$id.'" onclick=";window.location.href=this.getAttribute(\'href\');return false;" value="PAGAR" />':'';				
+				$pagar = (isset($row['pagado']) && $row['pagado']==0 && ($row['estatus']=='VENDIDO' or $row['estatus']=='TERMINADO'))?'<input type="button" href="pagos.php?task=add&id_eve='.$id.'" onclick=";window.location.href=this.getAttribute(\'href\');return false;" value="PAGAR" />':'';				
 
 				$editar_tipo = (isset($row['estatus']) && $row['estatus']=='COTIZADO')?'&editar_tipo=cotizaciones':((isset($row['estatus']) && $row['estatus']=='VENDIDO')?'&editar_tipo=eventos':'');
 				$editar = (isset($row['estatus']) && ($row['estatus']=='COTIZADO' || $row['estatus']=='VENDIDO'))?'<input type="button" onclick=";window.location.href=this.getAttribute(\'href\');return false;" href="eventos.php?task=edit'.$editar_tipo.'&id='.$id.'" value="EDITAR" lab="cancelado" />':'';
@@ -273,6 +306,12 @@ define('MODULO', 500);
 				$vender = (isset($row['estatus']) && $row['estatus']=='COTIZADO')?'<input type="button" onclick="cambiarest(this);" tipo="sell" identif="'.$id.'" value="VENDER" lab="vendido" />':'';
 				$rechazar = (isset($row['estatus']) && $row['estatus']=='COTIZADO')?'<input type="button" onclick="cambiarest(this);" tipo="reject" identif="'.$id.'" value="RECHAZAR" lab="rechazado" />':'';				
 				$pdf = '<input type="button" value="PDF" tipo="cotizacion" identif="'.$id.'" onclick="exportar_pdf(this);" />';
+				$pdf_st = '<input type="button" value="PDF ST" tipo="cotizacionst" identif="'.$id.'" onclick="exportar_pdf(this);" />';
+
+				$pdf_email = '<input type="button" value="ENVIAR" tipo="cotizaciontemp" identif="'.$id.'" onclick="outlock(this);" />';
+
+				$boton_facturar = ($reqfactura=='NO')? '':'<input type="button" value="FACTURA" identif="'.$id.'" onclick=";window.location.href=this.getAttribute(\'href\');return false;" href="facturas.php?task=add&id_eve='.$id.'" />';
+				$id_evento = $id;
 				?>
 			</table>
 			<hr class="bleed-flush compact" />
@@ -287,12 +326,15 @@ define('MODULO', 500);
 						EMPLEADO: <span class="vdato"><?php echo $row['vendedor'] ?></span>
 					</td>
 				</tr>
+
 				<tr>
 					<td colspan="2">
-						<p align="center"><?php echo $notas.$vender.$cancelar.$pagar.$rechazar.$editar.$pdf ?></p>
+						<p align="center"><?php echo $notas.$vender.$cancelar.$pagar.$rechazar.$editar.$pdf.$pdf_st.$pdf_email.$boton_facturar ?></p>
 					</td>
 				</tr>
 			</table>
+			<hr class="bleed-flush compact" />
+
 		</form>
 		</div>
 	</div><!--class="boxed-group"-->
@@ -320,7 +362,7 @@ define('MODULO', 500);
 				<?php
 				$sql = "select id_eve_notes id, notas, falta
 					, date_format(falta, '%d/%m/%Y')fecha
-					, date_format(falta, '%r')hora
+					, date_format(falta, '%T')hora
 					, concat(emp.nombre, ' ', emp.ape_pat, ' ', emp.ape_mat)empleado
 					from eventos_notas
 					left join empleados emp using(id_emp)
@@ -365,6 +407,20 @@ define('MODULO', 500);
 <!--
     $(':input[type=text], input[type=password]').addClass("text ui-widget-content ui-corner-all");
     $("input:submit, input:button, input:reset").button();
+
+    function outlock(objeto) {
+		// exportar_pdf(objeto);
+		$.ajax({
+			type: "GET",
+			url: "pdf_cotizacion.php?id=<?php echo $id_evento; ?>&tipo=cotizaciontemp",
+			success: function(msg){ 
+    			window.location.href='mailto:<?php echo $email; ?>?subject=Cotización VIE&body=COMENTARIOS DESCARGAR PDF HTTP://<?php echo $_SERVER['SERVER_NAME']; ?>/viesys/temp/vie_cotizacion_<?php echo $id_evento; ?>.pdf';
+			}
+		});
+		
+
+
+    }
 //-->
 </script>
 <?php

@@ -1644,3 +1644,35 @@ tr.resealtado td {
  #DatossEvento table{
  	font-size: 11px;
  }
+
+ .numeros_rojos {
+ 	color:red;
+ 	text-decoration: line-through;
+ } 
+ .num_rojos {
+ 	color:red;
+ }
+
+ 
+#calendario_inicial {
+	background-color: #FFF;
+	padding: 5px;
+}
+
+.cajitas {
+	padding-left: 10px;
+}
+
+.div_segundo_plano {
+	background-color: #FFF;
+	border:solid 2px #d8d8d8;
+	padding: 5px;
+}
+.div_segundo_plano td {
+	border:solid 1px #CCC;
+}
+
+.settings-content-sinheader {
+	position: relative;
+	width: 760px;
+}

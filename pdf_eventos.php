@@ -107,8 +107,9 @@ define('MODULO', 3001);
 			, ev.cos_tot
 			, ev.estatus
 			, ev.fecha fecha2
+			, date_format(ev.falta, '%d/%m/%Y')falta			
 			, date_format(ev.fecha, '%d/%m/%Y')fecha
-			, date_format(ev.hora, '%r')hora
+			, date_format(ev.hora, '%T')hora
 			from eventos ev 
 			inner join tipo_evento teve using( id_tip_eve )
 			inner join servicios_eventos seve using( id_eve )
@@ -141,6 +142,17 @@ define('MODULO', 3001);
 				$this->Ln();
 
 				$this->SetX($vie_margen);
+				
+				$no_cotizacion = $row['id_eve'];
+				$no_cotizacion = str_pad($no_cotizacion, 5, '0', STR_PAD_LEFT );
+
+				$this->Cell(50, 5, utf8_decode('NÚMERO DE EVENTO: '), 1 ,0 ,'L' ,1);
+				$this->Cell(80, 5, utf8_decode($no_cotizacion), 1 ,0 ,'L' ,1);
+				$this->Ln();
+				$this->Cell(50, 5, utf8_decode('FECHA DE COTIZACIÓN: '), 1 ,0 ,'L' ,1);
+				$this->Cell(80, 5, utf8_decode(($row['falta'])), 1 ,0 ,'L' ,1);
+				$this->Ln();
+
 				$this->Cell(50, 5, utf8_decode('ESTATUS: '), 1 ,0 ,'L' ,1);
 				$this->Cell(80, 5, utf8_decode($row['estatus']), 1 ,0 ,'L' ,1);
 				$this->Ln();

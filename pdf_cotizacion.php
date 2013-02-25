@@ -54,7 +54,7 @@ define('MODULO', 3001);
 			
 			$this->SetX($vie_margen);
 			$this->SetFont('Arial','',10);
-			$this->Cell(0,4, dame_la_fecha(),0,1,'R',0);
+			// $this->Cell(0,4, dame_la_fecha(),0,1,'R',0);
 			/*
 			$this->SetX($vie_margen);
 			$this->SetFont('Arial','',8);
@@ -79,25 +79,18 @@ define('MODULO', 3001);
 			$this->SetX($vie_margen);
 			$this->SetY(-15); //Posición: a 1,5 cm del final			
 			$this->SetFont('Arial','',8);
-			#$elaboro = $_SESSION[TOKEN.'NOM_COMPLETO'];
-			#$this->Cell(0,10, utf8_decode('Elaboró: ').$elaboro,0,1,'L',0);
-
-
 			$this->SetTextColor(179, 179, 179);#B3B3B3
 
-			$label_1 = "Daniel Espinoza número 5-B, colonia Jesús Jiménez Gallardo, 52167, Metepec, Estado de México";
-			$label_2 = "Tel: (722) 219-9242, vievents@yahoo.com.mx";
-
-			#$this->Cell(0,5, utf8_decode($label_1).$elaboro,0,1,'C',0);
-			#$this->Cell(0,5, utf8_decode($label_2).$elaboro,0,1,'C',0);
-
+			$this->Cell(0,3, utf8_decode('Oficinas: Daniel Espinoza No.5, Mz 16, Lt 5, P.A. Col. Jesús Jiménez Gallardo,'),0,1,'C',0);
+			$this->Cell(0,3, utf8_decode('C.P. 52167 Metepec, Estado de México, Conmutador (con 3 líneas) 722 219 9242,'),0,1,'C',0);
+			$this->Cell(0,3, utf8_decode('Email: ventas@vie.com.mx'),0,1,'C',0);
 
 		}
 		
 		function Generar()
 		{			
 			$fill=false; // Datos	
-			global $conn, $addsql, $vie_margen, $id;	// Conexion utilizada para la BD
+			global $conn, $addsql, $vie_margen, $id, $tipo;	// Conexion utilizada para la BD
 			
 			# Configuracion de colores, ancho de linea y fuente en negrita
 			$this->SetFillColor(222,26,124);//color lineas
@@ -126,8 +119,9 @@ define('MODULO', 3001);
 			, ev.pagado
 			, ev.cos_tot
 			, ev.fecha fecha2
+			, ev.observaciones
 			, date_format(ev.fecha, '%d/%m/%Y')fecha
-			, date_format(ev.hora, '%h:%i %p')hora
+			, date_format(ev.hora, '%H:%i %p')hora
 			, date_format(ev.falta, '%d/%m/%Y')falta
 			from eventos ev 
 			inner join tipo_evento teve using(id_tip_eve)
@@ -184,12 +178,10 @@ define('MODULO', 3001);
 				$this->Cell(0, 5, utf8_decode('Ref. Cotización: ').$no_cotizacion, 0 ,0 ,'C' ,1);
 				$this->Ln();
 
-				$this->SetX($vie_margen);
+				/*$this->SetX($vie_margen);
 				$this->Cell(0, 5, utf8_decode('Fecha Cotizada: ').$row['falta'], 0 ,0 ,'C' ,1);
 				$this->Ln();
-				$this->Ln();
-
-				
+				$this->Ln();*/		
 
 				$texto_editado = 'Estimado(a) '.$row['nombre_cliente'].': ';
 				$this->SetX($vie_margen);
@@ -259,19 +251,35 @@ define('MODULO', 3001);
 					$this->Cell(130, 5, utf8_decode('NO SE ENCONTRARON SERVICIOS CONTRATADOS.'), 1, 0, 'L', 1);
 					$this->Ln();
 				}else {
-					$this->SetX($vie_margen);
-					$this->Cell(110, 5, utf8_decode('TOTAL $'), 1, 0, 'R', 1);
-					$this->Cell(40, 5, $ctotal, 1, 0, 'R', 1);
-					$this->Cell(40, 5, $ctotal_sin_iva, 1, 0, 'R', 1);
-					$this->Ln();
+					if(isset($tipo) and $tipo!='cotizacionst'){
+
+						$this->SetX($vie_margen);
+						$this->Cell(110, 5, utf8_decode('TOTAL $'), 1, 0, 'R', 1);
+						$this->Cell(40, 5, $ctotal, 1, 0, 'R', 1);
+						$this->Cell(40, 5, $ctotal_sin_iva, 1, 0, 'R', 1);
+						$this->Ln();
+					}
 
 				}
 						
 
 				$this->SetFont('Arial','',10);
 				$this->Ln();
+				
 				$this->SetX($vie_margen);
 				$this->Cell(0, 5, utf8_decode('Observaciones:'), 0, 0, 'L', 1);
+				$this->Ln();
+				$observaciones = trim($row['observaciones']);
+				$arr_obs = explode("\n", $observaciones);
+				foreach ($arr_obs as $key => $value) {
+					$this->MultiCell(0, 5, utf8_decode($value),0 ,'L' ,1);
+					$this->Ln();
+				}
+				// $this->Cell(0, 5, utf8_decode($row['observaciones']), 0 ,0 ,'L' ,1);
+				//$this->Ln();
+
+				/*$this->SetX($vie_margen);
+				$this->Cell(0, 5, utf8_decode('Detalles:'), 0, 0, 'L', 1);
 				$this->Ln();
 				$texto_editado = 'Forma de pago: 50% del total al reservar los servicios y firmar el contrato respectivo, y el 50% restante a más tardar';
 				$this->SetX($vie_margen);
@@ -294,7 +302,7 @@ define('MODULO', 3001);
 				$this->SetX($vie_margen);
 				$this->Cell(5, 5, '', 0, 0, 'L', 1);
 				$this->Cell(185, 5, utf8_decode($texto_editado), 0 ,0 ,'L' ,1);
-				 
+				 */
 				$this->Ln();
 				$this->Ln();
 
@@ -323,11 +331,17 @@ define('MODULO', 3001);
 					$this->Cell(80, 5, 'Tel. '.utf8_decode($row['tel']), 0, 0 ,'L' ,1);
 					$this->Ln();
 				}
-				if(isset($row['email']) && $row['email']!='') {
-					$this->SetX($vie_margen);
-					$this->Cell(80, 5, utf8_decode($row['email']), 0, 0 ,'L' ,1);
-					$this->Ln();
-				}
+				
+				$this->SetX($vie_margen);
+				$this->Cell(80, 5, utf8_decode('ventas@vie.com.mx'), 0, 0 ,'L' ,1);
+				$this->Ln();
+				
+
+
+				##intento ponerla arriba
+				$this->SetY(45);
+				$this->SetX($vie_margen);
+				$this->Cell(0, 5, dame_la_fecha_otra_vez($row['falta']), 0 ,0 ,'R' ,0);
 			
 			}//si hay registros
 			else {
@@ -377,7 +391,9 @@ define('MODULO', 3001);
 	{
 		if (file_exists($archivo)){
 			//echo '<p>El archivo <a href="'.$archivo.'" target="_blank" class="ligaalreporte">'.$archivo.'</a> se genero exitosamente.</p>';
-			header('Location:'.$archivo);
+			if($tipo!='cotizaciontemp') {
+				header('Location:'.$archivo);
+			}
 		}else{
 			 echo 'Error al generar el archivo <span class="ligaalreporte">'.$archivo.'</span>';
 		}

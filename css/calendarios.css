@@ -193,3 +193,15 @@ span.evento_terminado {
 	width: 15px;
 	height: 15px;
 }
+span.eventos_varios {
+	background-color: #FF5C61;
+	display: inline-block;
+	width: 15px;
+	height: 15px;
+}
+span.eventos_terminado {
+	background-color: #D0F676;
+	display: inline-block;
+	width: 15px;
+	height: 15px;
+}

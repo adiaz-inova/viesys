@@ -15,7 +15,7 @@ define('MODULO', 600);
 		break;
 		case 'alter':
 
-		 	$qry = "UPDATE facturas SET num_fac = $Fnumfac, fecha = '$Ffecha', id_cli = $Fcliente, subtotal = '$Fsubtotal', iva = '$Fiva', total = '$Ftotal', id_est = $Festatus WHERE id_fac = ".$Fid;
+		 	$qry = "UPDATE facturas SET id_eve=$Fevento, num_fac = $Fnumfac, fecha = '$Ffecha', id_cli = $Fcliente, subtotal = '$Fsubtotal', iva = '$Fiva', total = '$Ftotal', id_est = $Festatus WHERE id_fac = ".$Fid;
 
 		break;
 		case 'add':
@@ -24,8 +24,8 @@ define('MODULO', 600);
 			$Fiva = (isset($Fiva) && $Fiva != '') ? formatInput($Fiva) : 0;
 			$Ftotal = (isset($Ftotal) && $Ftotal != '') ? formatInput($Ftotal) : 0;
 
-			$qry = "INSERT INTO facturas ( num_fac, fecha, id_cli, subtotal, iva, total, id_est)
-				VALUES($Fnumfac, '$Ffecha', $Fcliente, '$Fsubtotal', '$Fiva', '$Ftotal', $Festatus)";
+			$qry = "INSERT INTO facturas ( num_fac, fecha, id_cli, subtotal, iva, total, id_est, id_eve)
+				VALUES($Fnumfac, '$Ffecha', $Fcliente, '$Fsubtotal', '$Fiva', '$Ftotal', $Festatus, $Fevento)";
 		
 		break;
 	}

@@ -173,9 +173,6 @@ VALUES ('".$Fdescrip."', '".$Falias."', $valorconstante, '".$tablabd."', '".$cam
 
 	}
 
-	echo $tipo;
-	echo $qry;
-	exit;
 	$stid = mysql_query($qry);
 		
 	$op = mysql_affected_rows();

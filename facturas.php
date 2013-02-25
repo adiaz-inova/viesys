@@ -30,7 +30,48 @@ define('MODULO', 600);
 	$("#Ffecha2").datepicker({
 		altField: "#Ffecha",
         altFormat: "yy-mm-dd"
-	});';
+	});
+
+	$("#Fsubtotal").change(function () {
+		llenadoauto();
+	});
+	
+	$("#Ftotal").change(function () {
+		llenadoauto_rev();
+	});
+
+	';
+
+	$js = '
+	function llenadoauto() {
+		Fsubtotal = $("#Fsubtotal");
+		Fiva = $("#Fiva");
+		Ftotal = $("#Ftotal");
+
+		if(Fsubtotal.val() != "") {
+			var subtotal = parseFloat(Fsubtotal.val());
+			iva = subtotal * 0.16;
+			total = subtotal + iva;
+			Ftotal.val(total.toFixed(2));
+			Fiva.val(iva.toFixed(2));
+		}
+	}
+	function llenadoauto_rev() {
+		Fsubtotal = $("#Fsubtotal");
+		Fiva = $("#Fiva");
+		Ftotal = $("#Ftotal");
+
+		if(Ftotal.val() != "") {
+			subtotal = 0;
+			iva = 0;
+			total = parseFloat(Ftotal.val());
+			subtotal = total / 1.16;
+			iva =  total - subtotal;
+			Fsubtotal.val(subtotal.toFixed(2));
+			Fiva.val(iva.toFixed(2));
+		}
+	}
+	';
 	
 #	if(!isset($_SESSION[TOKEN.'ADMIN']) || !$_SESSION[TOKEN.'ADMIN']) {
 #		$contenido_html = 'NO TIENE PRIVILEGIOS PARA CONSULTAR ESTE MÓDULO';
@@ -51,6 +92,8 @@ define('MODULO', 600);
 			, fac.num_fac
 			, date_format(fac.fecha, '%d/%m/%y')fecha
 			, fac.id_cli
+			, fac.id_eve
+			, ev.pagado
 			,case 
 			when cli.empresa <> '' then cli.empresa
 			when cli.nombre <> '' then concat(cli.nombre,' ',cli.ape_pat,' ',cli.ape_mat)
@@ -62,6 +105,7 @@ define('MODULO', 600);
 			, fac.id_est estatus
 			from facturas fac 
 			inner join clientes cli using(id_cli)
+			left join eventos ev using(id_eve)
 			WHERE 1=1 AND fac.id_est in(1,3) order by num_fac, cliente";
 		
 			$stid = mysql_query($sql);
@@ -74,20 +118,19 @@ define('MODULO', 600);
 					<img src="images/Search-icon-24.png" title="Filtrar" alt="Filtrar" />
 					<input name="filtro" id="filtro" type="text" size="25" maxlength="50" class="minus" tipo="facturas" placeholder="buscar"/>
 				</form>
-				<div align="right" class="botonsuperior">
-	        		<input type="button" value="Agregar" href="<?php echo $_SERVER['PHP_SELF'] ?>?task=add" onclick=";window.location.href=this.getAttribute('href');return false;" />
-				</div>
 			</div>
 			
 			<div class="scrool" id="cont">
 			<table width="100%" cellspacing="0" cellpadding="3">
 				<tr class="Cabezadefila">
 					<th width="3%">#</th>
-					<th width="10%">Factura No.</th>
-					<th width="30%">Fecha</th>
+					<th width="10%">Factura</th>
+					<th width="10%">Evento</th>
+					<th width="10%">Fecha</th>
 					<th width="12%">Cliente</th>
 					<th width="15%">Total</th>
-					<th width="5%">Acción</th>
+					<th width="10%">Pagado</th>
+					<!-- <th width="5%">Acción</th> -->
 					<th width="5%">Edit</th>
 					<th width="5%">Elim</th>
 				</tr>
@@ -99,22 +142,26 @@ define('MODULO', 600);
 
 				$id = $row['id'];
 				$id_cli = $row['id_cli'];
+				$id_eve = $row['id_eve'];
 				$num_fac = $row['num_fac'];
 				$fecha = $row['fecha'];
 				$cliente = $row['cliente'];
 				$total = $row['total'];
+				$pagado = (isset($row['pagado']) && $row['pagado']==0)? 'NO' : 'SI';
 				
 				$accion = ( $row['estatus'] == 1)? '<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="factura" accion="suspender" title="Suspender" alt="Suspender"><img src="images/enabled2.png" border="0"></a>':'<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="factura" accion="activar" title="Activar" alt="Activar"><img src="images/disabled2.png" border="0"></a>';												
-				$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="facturas" value="-" />';
+				$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="factura" value="-" />';
 
 			?>
 				<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" id="row<?php echo $id; ?>">
 					<td align="center" class="celdaNormal"><?php echo $registros; ?></td>
 					<td align="right" class="celdaNormal"><a href="facturas.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $num_fac; ?></a></td>
+					<td align="center" class="celdaNormal"><?php echo $id_eve; ?></td>
 					<td align="center" class="celdaNormal"><a href="facturas.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $fecha; ?></a></td>
 					<td align="left" class="celdaNormal"><a href="clientes.php?task=edit&id=<?php echo $id_cli; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $cliente; ?></a></td>
-					<td align="left" class="celdaNormal"><?php echo $total; ?></td>
-					<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
+					<td align="right" class="celdaNormal"><?php echo $total; ?></td>
+					<td align="center" class="celdaNormal"><?php echo $pagado; ?></td>
+					<!-- <td align="center" class="celdaNormal"><?php echo $accion; ?></td> -->
 					<td align="center" class="celdaNormal"><a href="facturas.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 				</tr>
@@ -153,6 +200,7 @@ define('MODULO', 600);
 			, fac.id_cli
 			, fac.subtotal
 			, fac.iva
+			, fac.id_eve
 			, fac.total
 			, fac.id_est estatus
 			from facturas fac where 1=1
@@ -167,6 +215,17 @@ define('MODULO', 600);
 			$total = formateo($row['total']);
 
 ?>
+			<h4>EVENTO</h4>
+				<table width="100%" cellpadding="5" cellspacing="0">				
+				<tr>
+					<td valign="top" align="left">
+						<span class="required">*</span>EVENTO
+						<input class="" name="Fevento" type="text" id="Fevento" value="<?php echo $row['id_eve']; ?>" size="10" maxlength="11" onkeypress="return vNumeros(event, this);" req="req" lab="Número de evento" style="text-align:right;" />
+					</td>
+				</tr>				
+			</table>
+			<hr class="bleed-flush compact">
+
 			<h4>Acerca de la factura</h4>
 				<table width="100%">
 					<tr>
@@ -211,7 +270,7 @@ define('MODULO', 600);
 						</td>
 						<td align="left">
 							<p>
-								IVA<br><input class="" name="Fiva" type="text" id="Fiva" value="<?php echo $iva; ?>" size="10" maxlength="11" onkeypress="return vNumeros(event, this);" req="" lab="IVA de factura" style="text-align:right;" />
+								IVA<br><input readonly="readonly" class="" name="Fiva" type="text" id="Fiva" value="<?php echo $iva; ?>" size="10" maxlength="11" onkeypress="return vNumeros(event, this);" req="" lab="IVA de factura" style="text-align:right;" />
 							</p>
 						</td>
 						<td align="left">
@@ -254,7 +313,7 @@ define('MODULO', 600);
 		<table width="100%" cellpadding="3" cellspacing="3" align="center">
 			<tr>
 				<td align="center"><br />
-		            <input class="" type="button" name="" value="Guardar y Salir" act="exit" onclick="update(this, 'facturas', 'Fnumfac|Ffecha|Fcliente|Festatus', 'notices');" />&nbsp;
+		            <input class="" type="button" name="" value="Guardar y Salir" act="exit" onclick="update(this, 'facturas', 'Fevento|Fnumfac|Ffecha|Fcliente|Festatus', 'notices');" />&nbsp;
 		            <input class="" name="" type="button" value="Cancelar" onclick="javascript:window.location.href='<?php echo $_SERVER['PHP_SELF'] ?>';" />
 					<div class="avisorequired"><span class="required">* campos requeridos</span></div>
 				</td>
@@ -271,6 +330,17 @@ define('MODULO', 600);
 			<form id="formulario" class="js-notifications-settings">
 			<div id="notices"></div>
 				<div class="boxed-group-inner">
+
+			<h4>EVENTO</h4>
+				<table width="100%" cellpadding="5" cellspacing="0">				
+				<tr>
+					<td valign="top" align="left">
+						<span class="required">*</span>EVENTO
+						<input class="" name="Fevento" type="text" id="Fevento" value="<?php echo $id_eve ?>" size="10" maxlength="11" onkeypress="return vNumeros(event, this);" req="req" lab="Número de evento" style="text-align:right;" />
+					</td>
+				</tr>				
+			</table>
+			<hr class="bleed-flush compact">
 
 			<h4>Acerca de la factura</h4>
 				<table width="100%">
@@ -312,7 +382,7 @@ define('MODULO', 600);
 						</td>
 						<td align="left">
 							<p>
-								IVA<br><input class="" name="Fiva" type="text" id="Fiva" value="" size="10" maxlength="11" onkeypress="return vNumeros(event, this);" req="" lab="IVA de factura" style="text-align:right;" />
+								IVA<br><input readonly="readonly" class="" name="Fiva" type="text" id="Fiva" value="" size="10" maxlength="11" onkeypress="return vNumeros(event, this);" req="" lab="IVA de factura" style="text-align:right;" />
 							</p>
 						</td>
 						<td align="left">
@@ -351,7 +421,7 @@ define('MODULO', 600);
 			<tr>
 				<td align="center"><br />
 					
-					<input type="button" onclick="add(this, 'facturas', 'Fnumfac|Ffecha2|Fcliente|Festatus', 'notices');" value="Guardar cambios" />
+					<input type="button" onclick="add(this, 'facturas', 'Fevento|Fnumfac|Ffecha2|Fcliente|Festatus', 'notices');" value="Guardar cambios" />
 					<input type="button"  value="Cancelar" href="<?php echo $_SERVER['PHP_SELF'] ?>" onclick=";window.location.href=this.getAttribute('href');return false;" />
 		            
 		            <div class="avisorequired"><span class="required">* campos requeridos</span></div>						

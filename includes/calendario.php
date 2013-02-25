@@ -61,6 +61,8 @@ function dame_nombre_mes($mes){
 
 function mostrar_calendario($dia,$mes,$ano){
 
+
+	// $addsql = ' and CURDATE() <= ev.fecha';
 	$sql = "
 	select 
 	ev.id_eve
@@ -91,7 +93,7 @@ function mostrar_calendario($dia,$mes,$ano){
 	inner join clientes cli using(id_cli)
 	inner join empleados emp using(id_emp)
 	where 1=1
-	and (estatus in('VENDIDO','TERMINADO') or (estatus = 'COTIZADO' and CURDATE() <= ev.fecha))
+	and (estatus in('VENDIDO') or (estatus = 'COTIZADO'))
 	and (date_format(ev.fecha, '%c') = ".$mes." and date_format(ev.fecha, '%Y') = ".$ano.")
 	";
 	
@@ -105,16 +107,37 @@ function mostrar_calendario($dia,$mes,$ano){
 	$arrayfechaterminoeventos = array();
 	$i=0;
 	while ($row = mysql_fetch_assoc($stid)) {
-		if(isset($row['estatus']) && $row['estatus']=='COTIZADO')
+		
+		if(isset($row['estatus']) && $row['estatus']=='COTIZADO') {
 			$arrayeventos[$i] = array("evento_id"=>$row['id_eve'], "inicio"=>$row['fecha'], "fin"=>$row['fecha'], "color"=>'#f6d729', "tema"=>'VIE TEMA', "titulo"=>$row['tipodeevento']);
+		}
 		
-		if(isset($row['estatus']) && $row['estatus']=='VENDIDO')
+		if(isset($row['estatus']) && $row['estatus']=='VENDIDO') {
 			$arrayeventos[$i] = array("evento_id"=>$row['id_eve'], "inicio"=>$row['fecha'], "fin"=>$row['fecha'], "color"=>'#1be316', "tema"=>'VIE TEMA', "titulo"=>$row['tipodeevento']);
+		}
+
+		if(isset($row['estatus']) and $row['estatus']=='COTIZADO' and $row['vigencia']=='VENCIDA') {
+			$arrayeventos[$i] = array("evento_id"=>$row['id_eve'], "inicio"=>$row['fecha'], "fin"=>$row['fecha'], "color"=>'#FEF188', "tema"=>'VIE TEMA', "titulo"=>$row['tipodeevento']);
+		}
 		
-		if(isset($row['estatus']) && $row['estatus']=='TERMINADO')
-			$arrayeventos[$i] = array("evento_id"=>$row['id_eve'], "inicio"=>$row['fecha'], "fin"=>$row['fecha'], "color"=>'#f67c46', "tema"=>'VIE TEMA', "titulo"=>$row['tipodeevento']);
+		if(isset($row['estatus']) and $row['estatus']=='VENDIDO' and $row['vigencia']=='VENCIDA') {
+			$arrayeventos[$i] = array("evento_id"=>$row['id_eve'], "inicio"=>$row['fecha'], "fin"=>$row['fecha'], "color"=>'#B1D065', "tema"=>'VIE TEMA', "titulo"=>$row['tipodeevento']);
+		}
+
+		if(isset($row['estatus']) && $row['estatus']=='TERMINADO') {
+			$arrayeventos[$i] = array("evento_id"=>$row['id_eve'], "inicio"=>$row['fecha'], "fin"=>$row['fecha'], "color"=>'#D0F676', "tema"=>'VIE TEMA', "titulo"=>$row['tipodeevento']);
+		}
+
+		// COTIZADO
+		// vigencia
+		// VENCIDA
+		// #FEF188
+
+		// VENDIDO
+		// vigencia
+		// VENCIDA
+		// #B1D065
 		
-		#$arrayeventos[$i] = array("evento_id"=>$row['id_eve'], "inicio"=>$row['fecha'], "fin"=>$row['fecha'], "color"=>$row['cattema_color'], "tema"=>$row['cattema_tema'], "titulo"=>$row['evento_titulo']);	
 		$i++;
 	}//while
 	
@@ -199,19 +222,28 @@ function mostrar_calendario($dia,$mes,$ano){
 		$color='';
 		$ev_titulo = '';
 		$addevento='<span class="mes_numdia">'.$dia_actual.'</span>';
+		$contador=0;
 		foreach($arrayeventos as $key => $value)
 		{
 			
-			if($dia_actual >= $value["inicio"] && $dia_actual <= $value["fin"])
+			if($dia_actual == $value["inicio"])
 			{
+				$contador++;
 				$banderita = true;
 				$color = $value["color"];
 				$mensajito = 'background-color:'.$color;
 				$ev_titulo = $value["titulo"];
-				#$addevento='<a href="cursos.php?ev_id='.$value["evento_id"].'" class="mes_numdia">'.$dia_actual.'</a>';
-				$addevento='<a href="#" class="mes_numdia">'.$dia_actual.'</a>';
+				$evento_id = $value['evento_id'];
+				$ev_fecha = $value['inicio'];
 			}
 
+		}
+		
+		if($contador == 1) {
+			$addevento='<a class="fiframe" href="eventos_view.php?task=view&amp;id_eve='.$evento_id.'" title="Ver detalles" alt="Ver detalles">'.$dia_actual.'</a>';
+		}elseif ($contador > 1) {
+			$mensajito = 'background-color:#FF5C61';
+			$addevento='<a href="cotizaciones.php?Fvigencia=&ev_fecha='.$ev_fecha.'" class="mes_numdia">'.$dia_actual.'</a>';
 		}
 		/*****************************************************/
 
@@ -262,19 +294,27 @@ function mostrar_calendario($dia,$mes,$ano){
 		$color='';
 		$ev_titulo = '';
 		$addevento='<span class="mes_numdia">'.$dia_actual.'</span>';
+		$contador=0;
 		foreach($arrayeventos as $key => $value)
 		{
 			
-			if($dia_actual >= $value["inicio"] && $dia_actual <= $value["fin"])
+			if($dia_actual == $value["inicio"])
 			{
+				$contador++;
 				$banderita = true;
 				$color = $value["color"];
 				$mensajito = 'background-color:'.$color;
 				$ev_titulo = $value["titulo"];
-				
-				#$addevento='<a href="cursos.php?ev_id='.$value["evento_id"].'" class="mes_numdia">'.$dia_actual.'</a>';
-				$addevento='<a href="#" class="mes_numdia">'.$dia_actual.'</a>';
+				$evento_id = $value['evento_id'];
+				$ev_fecha = $value['inicio'];
 			}
+
+		}
+		if($contador == 1) {
+			$addevento='<a class="fiframe" href="eventos_view.php?task=view&amp;id_eve='.$evento_id.'" title="Ver detalles" alt="Ver detalles">'.$dia_actual.'</a>';
+		}elseif ($contador > 1) {
+			$mensajito = 'background-color:#FF5C61';
+			$addevento='<a href="cotizaciones.php?Fvigencia=&ev_fecha='.$ev_fecha.'" class="mes_numdia">'.$dia_actual.'</a>';
 		}
 		/*****************************************************/
 			if (($numero_dia == 5) || ($numero_dia == 6))

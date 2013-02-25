@@ -3,7 +3,10 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 
 require_once('includes/conection.php');
 require_once('includes/session_principal.php');
+require_once('includes/calendario.php');
 # AQUI VAMOS A METER LOS MENSAJES PARA LOS USUARIOS
+
+$css_extras = '<link href="css/calendarios.css" rel="stylesheet" type="text/css" />';
 
 require_once('includes/html_template.php');
 function cot_pen() {
@@ -102,7 +105,7 @@ function cot_pen_admin() {
 		and CURDATE() <= ev.fecha
 		".$add_sql."
 		group by ev.id_emp, empleado
-		order by empleado";
+		order by empleado, ev.fecha";
 	
 	$stid = mysql_query($sql);
 
@@ -236,7 +239,7 @@ function eve_pago_pen_admin() {
 		and ev.pagado = 0
 		".$add_sql."
 		group by ev.id_emp, empleado
-		order by empleado";
+		order by empleado, ev.fecha";
 	
 	$stid = mysql_query($sql);
 
@@ -282,7 +285,7 @@ function mi_log() {
 	global $conn;
 	$sql = "select l.ip, l.host, l.browser, l.id_mod, l.id_emp
 			, date_format(l.date, '%d/%m/%Y')fecha
-			, date_format(l.date, '%r')hora
+			, date_format(l.date, '%T')hora
 			, l.date fechacom
 			, concat(emp.nombre,' ',emp.ape_pat,' ',emp.ape_mat) empleado
 			, mods.nombre modulo
@@ -345,15 +348,40 @@ function mi_log() {
 		echo eve_pago_pen_admin();
 	}
 	
+	$mes_anterior_mes = date('m',mktime(0, 0, 0, date("m")-1, 1, date("Y")));
+	$mes_anterior_anio = date('Y',mktime(0, 0, 0, date("m")-1, 1, date("Y")));
 
-# - - - - - tu actividad
-	echo mi_log();
-
-
+	$mes_siguiente_mes = date('m',mktime(0, 0, 0, date("m")+1, 1, date("Y")));
+	$mes_siguiente_anio = date('Y',mktime(0, 0, 0, date("m")+1, 1, date("Y")));
 ?>
-<div id="logo_inicial">
-	<img src="images/logo-inicial.png">
+<div id="calendario_inicial">
+	<table width="100%" cellpadding="3px">
+		<tr>
+			<td width="33%">
+				<?php mostrar_calendario(1, $mes_anterior_mes, $mes_anterior_anio); ?>
+			</td>
+			<td width="34%">
+				<?php mostrar_calendario(1, date('m'), date('Y')); ?>
+			</td>
+			<td width="33%">
+				<?php mostrar_calendario(1, $mes_siguiente_mes, $mes_siguiente_anio); ?>
+			</td>
+		</tr>
+	</table>
+	<div align="center">
+      <span class="evento_cotizado"></span> Cotizado
+      <span class="evento_vendido"></span> Vendido
+      <span class="eventos_varios"></span> Varios
+      <!-- <span class="eventos_terminado"></span> Terminado -->
+    </div>
 </div>
+<?php
+# - - - - - tu actividad
+	// echo mi_log();
+?>	
+<!-- <div id="logo_inicial">
+	<img src="images/logo-inicial.png">
+</div> -->
 <?php
 	mysql_close($conn);
 	require_once('includes/html_footer.php');

@@ -14,17 +14,17 @@ define('MODULO', 200);
 		break;
 		case 'alter':
 							
-			$qry = "UPDATE clientes SET empresa=UPPER('".$Fempresa."'), nombre=UPPER('".$Fnombres."'), ape_pat=UPPER('".$Fapaterno."'), ape_mat=UPPER('".$Famaterno."'), tel='".$Ftel."', email='".$Femail."', dir=UPPER('".$Fdireccion."'), id_est=".$Festatus."
+			$qry = "UPDATE clientes SET empresa=UPPER('".$Fempresa."'), nombre=UPPER('".$Fnombres."'), ape_pat=UPPER('".$Fapaterno."'), ape_mat=UPPER('".$Famaterno."'), tel='".$Ftel."', tel2='".$Ftel2."', email='".$Femail."', dir=UPPER('".$Fdireccion."'), id_est=".$Festatus.", procedencia='".$Fprocedencia."'
 			WHERE id_cli=".$Fid;
 				
 			
 		break;
 		case 'add':
 
-			$qry = "INSERT INTO clientes(empresa, nombre, ape_pat, ape_mat, tel, email, dir, id_est) 
+			$qry = "INSERT INTO clientes(empresa, nombre, ape_pat, ape_mat, tel, tel2, email, dir, id_est, procedencia) 
 					VALUES (
 						UPPER('".$Fempresa."'), UPPER('".$Fnombres."'), UPPER('".$Fapaterno."')
-						, UPPER('".$Famaterno."'), '".$Ftel."', '".$Femail."', UPPER('".$Fdireccion."'), 1)";
+						, UPPER('".$Famaterno."'), '".$Ftel."', '".$Ftel2."', '".$Femail."', UPPER('".$Fdireccion."'), 1, '".$Fprocedencia."')";
 		
 
 		break;

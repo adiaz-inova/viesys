@@ -10,34 +10,40 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 			
 	switch($mod) {
 		case 'pagos':
-			$addsql = " AND pa.id_eve = '".(int)$filtro."' ";
+			
+			$addsql = "";
+			if($filtro!='')
+				$addsql = " AND pa.id_eve = '".(int)$filtro."' ";
 
 			$sql = "select 
 			pa.id_pag id
 			, pa.id_eve evento
 			, pa.num_pago
+			, pa.recibo
 			, pa.subtotal
 			, pa.iva
 			, pa.total
 			, pa.id_tip_pag
-			, tpa.nombre tipo
+			, if(tpa.nombre='OTRO',pa.tip_pag_otro,tpa.nombre)tipo
 			, pa.id_est estatus
-			, pa.fec_pag
+			, date_format(pa.fec_pag, '%d/%m/%Y %H:%i')fec_pag
 			from pagos pa
 			inner join tipo_pago tpa using(id_tip_pag)
 			WHERE 1=1 AND pa.id_est in(1,3) ";
 
 			$sql .= $addsql;
-			$sql .= " order by pa.id_eve, pa.num_pago";
+			$sql .= " order by pa.id_eve, pa.fec_pag, pa.num_pago";
 
 			$stid = mysql_query($sql);
 			?>
 			<table width="100%" cellspacing="0" cellpadding="3">
 				<tr class="Cabezadefila">
 					<th width="3%">#</th>
-					<th width="25%">Evento</th>
+					<th width="15%">Fecha</th>
+					<th width="10%">Evento</th>
 					<th width="5%">Pago No.</th>
 					<th width="10%">Tipo</th>
+					<th width="10%">Recibo</th>
 					<th width="15%">Subtotal</th>
 					<th width="10%">IVA</th>
 					<th width="15%">Total</th>
@@ -57,6 +63,8 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 				$evento = $row['evento'];
 				$evento = str_pad($evento, 4, '0', STR_PAD_LEFT );
 
+				$recibo = $row['recibo'];
+
 				$subtotal = formateo($row['subtotal']);
 				$iva = formateo($row['iva']);
 				$total = formateo($row['total']);
@@ -64,16 +72,18 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 				$tipo = $row['tipo'];
 				$accion = ( $row['estatus'] == 1)? '<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="pago" accion="suspender" title="Suspender" alt="Suspender"><img src="images/enabled2.png" border="0"></a>':'<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="pago" accion="activar" title="Activar" alt="Activar"><img src="images/disabled2.png" border="0"></a>';												
 				$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="pago" value="-" />';
-
+				$clase = ($row['tipo']=='DEVOLUCION')?' class="numeros_rojos"':'';
 			?>
 				<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" id="row<?php echo $id; ?>">
 					<td align="center" class="celdaNormal"><?php echo $registros; ?></td>
-					<td align="center" class="celdaNormal"><a href="pagos.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $evento; ?></a></td>
-					<td align="left" class="celdaNormal"><a href="pagos.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $num_pago; ?></a></td>
-					<td align="left" class="celdaNormal"><a href="pagos.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $tipo; ?></a></td>
-					<td align="right" class="celdaNormal"><?php echo $subtotal; ?></td>
-					<td align="right" class="celdaNormal"><?php echo $iva; ?></td>
-					<td align="right" class="celdaNormal"><?php echo $total; ?></td>
+					<td align="center" class="celdaNormal"><?php echo $row['fec_pag'] ?></td>
+					<td align="center" class="celdaNormal"><?php echo $evento ?></td>
+					<td align="left" class="celdaNormal"><?php echo $num_pago; ?></td>
+					<td align="left" class="celdaNormal"><?php echo $tipo; ?></td>
+					<td align="left" class="celdaNormal"><?php echo $recibo; ?></td>
+					<td align="right" class="celdaNormal"><span <?php echo $clase ?>><?php echo number_format($subtotal,2); ?></span></td>
+					<td align="right" class="celdaNormal"><span <?php echo $clase ?>><?php echo number_format($iva,2); ?></span></td>
+					<td align="right" class="celdaNormal"><span <?php echo $clase ?>><?php echo number_format($total,2); ?></span></td>
 					<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
 					<td align="center" class="celdaNormal"><a href="pagos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
@@ -83,7 +93,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 			?>			
 
 				<tr class="Cabezadefila">
-					<td colspan='10'><?php echo $registros; ?> Registros encontrados.</td>
+					<td colspan='12'><?php echo $registros; ?> Registros encontrados.</td>
 				</tr>
 			</table>
 		<?php
@@ -113,7 +123,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 				)
 			";
 
-			$sql = "select distinct ev.id_eve
+			$sql = "select distinct ev.id_eve			
 			, ev.id_tip_eve
 			, date_format(ev.fecha, '%d/%m/%Y')fecha
 			, case 
@@ -128,27 +138,29 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 			, concat(cli.nombre, ' ', cli.ape_pat) cliente
 			, tev.nombre tipodeevento
 			, ev.estatus estatus2
+			, GROUP_CONCAT(serv.nombre SEPARATOR '<br>')servicio
 			from eventos ev
 			inner join salones sal using(id_sal)
 			inner join clientes cli using(id_cli)
 			inner join tipo_evento tev using(id_tip_eve)
 			left join servicios_eventos serev using(id_eve)
+			inner join servicios serv using(id_ser)
 			where 1=1";// and ev.estatus in('COTIZADO', 'RECHAZADO') ";
 			$sql .= $addsql . $gregar_filtro;			
-			$sql .= " ORDER BY ev.fecha";
+			$sql .= " group by id_eve ORDER BY ev.fecha";
 
 			$stid = mysql_query($sql);
 			?>
 			<table width="100%" cellspacing="0" cellpadding="3">
 				<tr class="Cabezadefila">
-					<th width="8%">No.</th>
+					<th width="5%">No.</th>
 					<th width="10%">Fecha</th>
-					<th width="7%">Hora</th>
+					<th width="5%">Hora</th>
 					<th width="15%">Tipo</th>
 					<th width="15%">Salón</th>
 					<th width="15%">Cliente</th>
-					<th width="5%">Edit</th>
-					<th width="5%">Estatus</th>
+					<th width="25%">Servicios</th>
+					<th width="10%">Estatus</th>
 				</tr>
 
 			<?php
@@ -165,6 +177,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 				$fecha = $row['fecha'];
 				$hora = $row['hora'];
 				$cliente = $row['cliente'];
+				$servicio = $row['servicio'];
 				
 				# estatus : 
 				# - vigente : fecha aun no ha pasado
@@ -186,19 +199,19 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 					<td align="center" class="celdaNormal"><?php echo $hora; ?></td>
 					<td align="left" class="celdaNormal"><?php echo $tipodeevento; ?></td>
 					<td align="left" class="celdaNormal"><?php echo $salon; ?></td>
-					<td align="center" class="celdaNormal"><?php echo $cliente; ?></td>
-					<td align="center" class="celdaNormal"><?php echo $editar; ?></td>
+					<td align="left" class="celdaNormal"><?php echo $cliente; ?></td>
+					<td align="left" class="celdaNormal"><?php echo $servicio; ?></td>
 					<td align="center" class="celdaNormal"><?php echo $estatus; ?></td>
+					<!-- <td align="center" class="celdaNormal"><?php echo $editar; ?></td> -->
+					<!-- <td align="center" class="celdaNormal"><?php echo $rechazar; ?></td> -->
 				</tr>
 			<?php
 			}			
-			?>			
-
+			?>
 				<tr class="Cabezadefila">
-					<td colspan='8'><?php echo $registros; ?> Registros encontrados.</td>
+					<td colspan='9'><?php echo $registros; ?> Registros encontrados.</td>
 				</tr>
 			</table>
-					
 		<?php
 		break;
 		case 'servicios':
@@ -286,11 +299,17 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 				fac.num_fac = ".$filtro."
 				)";
 
+			if(trim($filtro)==''){
+				$addsql = "";
+			}
+
 			$sql = "select 
 			fac.id_fac id
 			, fac.num_fac
 			, date_format(fac.fecha, '%d/%m/%y')fecha
 			, fac.id_cli
+			, fac.id_eve
+			, ev.pagado
 			,case 
 			when cli.empresa <> '' then cli.empresa
 			when cli.nombre <> '' then concat(cli.nombre,' ',cli.ape_pat,' ',cli.ape_mat)
@@ -302,6 +321,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 			, fac.id_est estatus
 			from facturas fac 
 			inner join clientes cli using(id_cli)
+			left join eventos ev using(id_eve)
 			WHERE 1=1 AND fac.id_est in(1,3)";
 			$sql .= $addsql;			
 			$sql .= " order by num_fac, cliente";
@@ -311,11 +331,13 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 			<table width="100%" cellspacing="0" cellpadding="3">
 				<tr class="Cabezadefila">
 					<th width="3%">#</th>
-					<th width="10%">Factura No.</th>
-					<th width="30%">Fecha</th>
+					<th width="10%">Factura</th>
+					<th width="10%">Evento</th>
+					<th width="10%">Fecha</th>
 					<th width="12%">Cliente</th>
 					<th width="15%">Total</th>
-					<th width="5%">Acción</th>
+					<th width="10%">Pagado</th>
+					<!-- <th width="5%">Acción</th> -->
 					<th width="5%">Edit</th>
 					<th width="5%">Elim</th>
 				</tr>
@@ -327,22 +349,26 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 
 				$id = $row['id'];
 				$id_cli = $row['id_cli'];
+				$id_eve = $row['id_eve'];
 				$num_fac = $row['num_fac'];
 				$fecha = $row['fecha'];
 				$cliente = $row['cliente'];
 				$total = $row['total'];
+				$pagado = (isset($row['pagado']) && $row['pagado']==0)? 'NO' : 'SI';
 				
 				$accion = ( $row['estatus'] == 1)? '<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="factura" accion="suspender" title="Suspender" alt="Suspender"><img src="images/enabled2.png" border="0"></a>':'<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="factura" accion="activar" title="Activar" alt="Activar"><img src="images/disabled2.png" border="0"></a>';												
-				$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="facturas" value="-" />';
+				$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="factura" value="-" />';
 
 			?>
 				<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" id="row<?php echo $id; ?>">
 					<td align="center" class="celdaNormal"><?php echo $registros; ?></td>
 					<td align="right" class="celdaNormal"><a href="facturas.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $num_fac; ?></a></td>
+					<td align="center" class="celdaNormal"><?php echo $id_eve; ?></td>
 					<td align="center" class="celdaNormal"><a href="facturas.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $fecha; ?></a></td>
 					<td align="left" class="celdaNormal"><a href="clientes.php?task=edit&id=<?php echo $id_cli; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $cliente; ?></a></td>
-					<td align="left" class="celdaNormal"><?php echo $total; ?></td>
-					<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
+					<td align="right" class="celdaNormal"><?php echo $total; ?></td>
+					<td align="center" class="celdaNormal"><?php echo $pagado; ?></td>
+					<!-- <td align="center" class="celdaNormal"><?php echo $accion; ?></td> -->
 					<td align="center" class="celdaNormal"><a href="facturas.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 				</tr>
@@ -388,31 +414,36 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 				, sal.nombre salon
 				, concat(cli.nombre, ' ', cli.ape_pat) cliente
 				, tev.nombre tipodeevento
+				, GROUP_CONCAT(serv.nombre SEPARATOR '<br>')servicio
 				, case 
 				when CURDATE() <= ev.fecha then 'VIGENTE'
 				else 'VENCIDA'
 				end vigencia
-				FROM eventos ev
-				INNER JOIN salones sal USING(id_sal)
-				INNER JOIN clientes cli USING(id_cli)
-				INNER JOIN tipo_evento tev USING(id_tip_eve)
-				WHERE 1=1 AND ev.estatus in('CANCELADO','VENDIDO','TERMINADO')";
+				from eventos ev
+				inner join salones sal using(id_sal)
+				inner join clientes cli using(id_cli)
+				inner join tipo_evento tev using(id_tip_eve)
+				inner join servicios_eventos serev using(id_eve)
+				inner join servicios serv using(id_ser)
+				where 1=1 AND ev.estatus in('CANCELADO','VENDIDO','TERMINADO')";
 				$sql .= $addsql.$gregar_filtro;
-				$sql .= " order by ev.estatus asc, ev.fecha desc";
+				$sql .= " group by id_eve order by ev.estatus asc, ev.fecha";
 
 				$stid = mysql_query($sql);
 				?>
 				<table width="100%" cellspacing="0" cellpadding="3">
 					<tr class="Cabezadefila">
-						<th width="8%">No.</th>
+						<th width="5%">No.</th>
 						<th width="10%">Fecha</th>
-						<th width="7%">Hora</th>
-						<th width="20%">Tipo</th>
-						<th width="20%">Salón</th>
+						<th width="5%">Hora</th>
+						<th width="15%">Tipo</th>
+						<th width="15%">Salón</th>
 						<th width="15%">Cliente</th>
 						<th width="5%">Pagado</th>
-						<th width="5%">Edit</th>
-						<th width="15%">Estatus</th>
+						<th width="20%">Servicios</th>
+						<th width="10%">Estatus</th>
+						<!-- <th width="5%">Edit</th> -->
+						<!-- <th width="5%">Elim</th> -->
 					</tr>
 
 				<?php
@@ -430,6 +461,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 					$hora = $row['hora'];
 					$cliente = $row['cliente'];
 					$estatus = $row['estatus'];
+					$servicio = $row['servicio'];
 																	
 					$ver_evento = '<a class="fiframe" href="eventos_view.php?task=view&id_eve='.$id.'" title="Ver detalles" alt="Ver detalles">'.$noevento.'</a>';
 					$fecha = '<a class="fiframe" href="eventos_view.php?task=view&id_eve='.$id.'" title="Ver detalles" alt="Ver detalles">'.$fecha.'</a>';
@@ -452,21 +484,24 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 						<td align="left" class="celdaNormal"><?php echo strtoupper($salon); ?></td>
 						<td align="center" class="celdaNormal"><?php echo $cliente; ?></td>
 						<td align="center" class="celdaNormal"><?php echo $pagado; ?></td>
-						<td align="center" class="celdaNormal"><?php echo $editar; ?></td>
+						<td align="left" class="celdaNormal"><?php echo $servicio; ?></td>
 						<td align="center" class="celdaNormal"><?php echo $estatus; ?></td>
+						<!-- <td align="center" class="celdaNormal"><?php echo $editar; ?></td> -->
+						<!-- <td align="center" class="celdaNormal"><?php echo $cancelar; ?></td> -->
 					</tr>
 				<?php
 				}			
 				?>			
 
 					<tr class="Cabezadefila">
-						<td colspan='9'><?php echo $registros; ?> Registros encontrados.</td>
+						<td colspan='10'><?php echo $registros; ?> Registros encontrados.</td>
 					</tr>
 				</table>
 		<?php
 		break;
 		case 'clientes':
-			$addsql = "
+			$addsql = (isset($Fccev) and $Fccev==1)? ' AND (SELECT count(*) FROM eventos WHERE id_cli=clientes.id_cli) > 0 ':''; 
+			$addsql .= "
 			AND (
 				UPPER(clientes.nombre) LIKE(UPPER('%".$filtro."%')) OR
 				UPPER(clientes.ape_pat) LIKE(UPPER('%".$filtro."%')) OR
@@ -483,12 +518,15 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 			clientes.ape_mat,
 			concat(clientes.nombre, ' ', clientes.ape_pat, ' ', clientes.ape_mat)cliente,
 			clientes.tel,
+			clientes.tel2,
 			clientes.email,
 			clientes.dir,
 			clientes.id_est estatus
+			, (SELECT count(*) FROM eventos WHERE id_cli=clientes.id_cli)neventos
 			FROM clientes
 			INNER JOIN estatus USING(id_est)
-			WHERE 1=1 AND clientes.id_est in(1,3)";
+			WHERE 1=1 AND clientes.id_est in(1,3)
+			";
 			$sql .= $addsql;			
 			$sql .= " ORDER BY cliente";
 
@@ -516,7 +554,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 				$id = $row['id_cli'];				
 				$cliente = $row['cliente'];
 				$email = $row['email'];
-				$email .= ($email!='')? '<br>'.$row['tel']:$row['tel'];
+				$email .= ($email!='')? '<br>'.$row['tel']." / ".$row['tel2']:$row['tel']." / ".$row['tel2'];
 				$empresa = $row['empresa'];
 				
 				$accion = (isset($row['estatus']) && $row['estatus'] == 1)? '<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="cliente" accion="suspender" title="Suspender" alt="Suspender"><img src="images/enabled2.png" border="0"></a>':'<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="cliente" accion="activar" title="Activar" alt="Activar"><img src="images/disabled2.png" border="0"></a>';
@@ -645,7 +683,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 					<th width="5%">Estatus</th>
 					<th width="17%">Usuario</th>					
 					<th width="25%">Grupo</th>
-					<th width="5%">Edit</th>
+					<!-- <th width="5%">Edit</th> -->
 					<th width="5%">Elim</th>
 				</tr>
 
@@ -673,7 +711,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 					<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
 					<td align="left" class="celdaNormal"><a href="empleados.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $usuario; ?></a></td>					
 					<td align="left" class="celdaNormal"><a href="grupos.php?task=edit&id=<?php echo $grupoid; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $grupo; ?></a></td>
-					<td align="center" class="celdaNormal"><a href="empleados.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+					<!-- <td align="center" class="celdaNormal"><a href="empleados.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td> -->
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 				</tr>
 			<?php
@@ -783,7 +821,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 
 				$sqlpag = $sql = "select l.ip, l.host, l.browser, l.id_mod, l.id_emp
 				, date_format(l.date, '%d/%m/%Y')fecha
-				, date_format(l.date, '%r')hora
+				, date_format(l.date, '%T')hora
 				, l.date fechacom
 				, concat(emp.nombre,' ',emp.ape_pat,' ',emp.ape_mat) empleado
 				, mods.nombre modulo
@@ -842,6 +880,55 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 				<?php
 				echo paginacion($sqlpag, $vie_max_regxpag, $pag, $url_parametros);
 				?>
+		<?php
+		break;
+		case 'tipo_evento':
+			$addsql = " AND UPPER(nombre) LIKE(UPPER('%".$filtro."%'))";
+
+			$sql = "SELECT
+			id_tip_eve id, nombre tipodeevento
+			from tipo_evento WHERE 1=1";
+			$sql .= $addsql;			
+			$sql .= " ORDER BY nombre";
+
+			$stid = mysql_query($sql);
+			?>
+			<table width="100%" cellspacing="0" cellpadding="3">
+				<tr class="Cabezadefila">
+					<th width="5%">#</th>
+					<th width="40%">Tipo de evento</th>
+					<th width="5%">Cotizaciones</th>
+					<th width="5%">Eventos</th>
+					<th width="5%">Edit</th>
+					<th width="5%">Elim</th>
+				</tr>
+
+			<?php
+			$registros = 0;
+			while($row = mysql_fetch_assoc($stid)) {	
+				$registros++;
+
+				$id = $row['id'];
+				$tipodeevento = $row['tipodeevento'];
+				$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="tipo_evento" value="-" />';
+
+				?>
+				<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" id="row<?php echo $id; ?>">
+					<td align="center" class="celdaNormal"><?php echo $registros; ?></td>
+					<td align="left" class="celdaNormal"><a href="tipo_eventos.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $tipodeevento; ?></a></td>
+					<td align="center" class="celdaNormal"><a href="cotizaciones.php?id_tipo_evento=<?php echo $id; ?>">VER</a></td>
+					<td align="center" class="celdaNormal"><a href="eventos.php?id_tipo_evento=<?php echo $id; ?>">VER</a></td>
+					<td align="center" class="celdaNormal"><a href="tipo_eventos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
+				</tr>
+			<?php
+			}			
+			?>			
+
+				<tr class="Cabezadefila">
+					<td colspan='8'><?php echo $registros; ?> Registros encontrados.</td>
+				</tr>
+			</table>
 		<?php
 		break;
 		default:

@@ -76,7 +76,7 @@ define('MODULO', 100);
 						<th width="25%">Grupo</th>
 						<th width="5%">Cotizaciones</th>
 						<th width="5%">Eventos</th>
-						<th width="5%">Edit</th>
+						<!-- <th width="5%">Edit</th> -->
 						<th width="5%">Elim</th>
 					</tr>
 
@@ -106,7 +106,7 @@ define('MODULO', 100);
 						<td align="left" class="celdaNormal"><a href="grupos.php?task=edit&id=<?php echo $grupoid; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $grupo; ?></a></td>
 						<td align="center" class="celdaNormal"><a href="cotizaciones.php?id_emp=<?php echo $id; ?>">VER</a></td>
 						<td align="center" class="celdaNormal"><a href="eventos.php?id_emp=<?php echo $id; ?>">VER</a></td>
-						<td align="center" class="celdaNormal"><a href="empleados.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+						<!-- <td align="center" class="celdaNormal"><a href="empleados.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td> -->
 						<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 					</tr>
 				<?php
@@ -217,7 +217,7 @@ define('MODULO', 100);
 						<tr>
 							<td width="32%" align="left">
 								<label><span class="required">*</span>TELÉFONO </label>
-								<input class="" name="Ftel" type="text" id="Ftel" value="<?php echo $row['tel']; ?>" size="12" maxlength="12" onkeypress="return vNumeros(event, this);" req="req" lab="Teléfono" />
+								<input class="" name="Ftel" type="text" id="Ftel" value="<?php echo $row['tel']; ?>" size="20" maxlength="25" onkeypress="return vAbierta(event, this);" req="req" lab="Teléfono" />
 							</td>
 						</tr>
 					</table>				
@@ -341,7 +341,7 @@ define('MODULO', 100);
 						<tr>
 							<td width="32%" align="left">
 								<label><span class="required">*</span>TELÉFONO </label>
-								<input class="" name="Ftel" type="text" id="Ftel" value="" size="12" maxlength="12" onkeypress="return vNumeros(event, this);" req="req" lab="Teléfono" />
+								<input class="" name="Ftel" type="text" id="Ftel" value="" size="20" maxlength="25" onkeypress="return vAbierta(event, this);" req="req" lab="Teléfono" />
 							</td>
 						</tr>
 					</table>				

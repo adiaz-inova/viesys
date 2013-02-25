@@ -39,8 +39,10 @@ define('MODULO', 200);
 			clientes.nombre,
 			clientes.ape_pat,
 			clientes.ape_mat,
+			clientes.procedencia,
 			concat(clientes.nombre, ' ', clientes.ape_pat, ' ', clientes.ape_mat)cliente,
 			clientes.tel,
+			clientes.tel2,
 			clientes.email,
 			clientes.dir,
 			clientes.id_est estatus
@@ -57,6 +59,7 @@ define('MODULO', 200);
 					<form id="formulario" name="formulario">
 						<img src="images/Search-icon-24.png" title="Filtrar" alt="Filtrar" />
 						<input name="filtro" id="filtro" type="text" size="25" maxlength="50" class="minus" tipo="clientes" placeholder="buscar"/>
+						Clientes con eventos <input type="checkbox" name="Fccev" id="Fccev" tipo="clientes" onchange="filtrar(this)" value="1">
 					</form>
 					<div align="right" class="botonsuperior">
 		        		<input type="button" value="Agregar" href="<?php echo $_SERVER['PHP_SELF'] ?>?task=add" onclick=";window.location.href=this.getAttribute('href');return false;" />
@@ -85,7 +88,7 @@ define('MODULO', 200);
 						$id = $row['id_cli'];				
 						$cliente = $row['cliente'];
 						$email = $row['email'];
-						$email .= ($email!='')? '<br>'.$row['tel']:$row['tel'];
+						$email .= ($email!='')? '<br>'.$row['tel']." / ".$row['tel2']:$row['tel']." / ".$row['tel2'];
 						$empresa = $row['empresa'];
 						
 						$accion = (isset($row['estatus']) && $row['estatus'] == 1)? '<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="cliente" accion="suspender" title="Suspender" alt="Suspender"><img src="images/enabled2.png" border="0"></a>':'<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="cliente" accion="activar" title="Activar" alt="Activar"><img src="images/disabled2.png" border="0"></a>';
@@ -134,10 +137,12 @@ define('MODULO', 200);
 				clientes.ape_pat paterno,
 				clientes.ape_mat materno,
 				clientes.tel,
+				clientes.tel2,
 				clientes.email,
 				clientes.dir,
 				clientes.id_est,
-				clientes.id_est estatus
+				clientes.id_est estatus,
+				clientes.procedencia
 				from clientes
 				inner join estatus using(id_est)
 				where 1=1 and clientes.id_cli=".$id;
@@ -187,15 +192,19 @@ define('MODULO', 200);
 					<h4>Dirección</h4>
 					<table width="100%" cellpadding="5" cellspacing="0">
 						<tr>
-							<td width="100%" lign="left">
+							<td align="left" colspan="2">
 								<label>DIRECCIÓN </label>
 								<input class="" name="Fdireccion" type="text" id="Fdireccion" value="<?php echo $row['dir']; ?>" size="80" maxlength="100" />
 							</td>
 						</tr>
 						<tr>
-							<td align="left">
+							<td width="50%" align="left">
 								<label><span class="required">*</span>TELÉFONO </label>
-								<input class="" name="Ftel" type="text" id="Ftel" value="<?php echo $row['tel']; ?>" size="12" maxlength="12" title="número de teléfono" onkeypress="return vNumeros(event, this);" />
+								<input class="" name="Ftel" type="text" id="Ftel" value="<?php echo $row['tel']; ?>" size="20" maxlength="25" title="número de teléfono" onkeypress="return vAbierta(event, this);" />
+							</td>
+							<td width="50%" align="left">
+								<label><span class="required">*</span>TELÉFONO </label>
+								<input class="" name="Ftel2" type="text" id="Ftel2" value="<?php echo $row['tel2']; ?>" size="20" maxlength="25" title="número de teléfono adicional" onkeypress="return vAbierta(event, this);" />
 							</td>
 						</tr>
 					</table>				
@@ -221,6 +230,10 @@ define('MODULO', 200);
 								}
 							?>
 							</select>
+						</td>
+						<td valign="top" align="left">
+							<label>PROCEDENCIA </label>
+							<input class="" name="Fprocedencia" type="text" id="Fprocedencia" value="<?php echo $row['procedencia']; ?>" size="60" maxlength="100" />
 						</td>
 					</tr>				
 				</table>
@@ -282,15 +295,30 @@ define('MODULO', 200);
 				<h4>Dirección</h4>
 				<table width="100%" cellpadding="5" cellspacing="0">
 					<tr>
-						<td width="100%" lign="left">
+						<td align="left" colspan="2">
 							<label>DIRECCIÓN </label>
 							<input class="" name="Fdireccion" type="text" id="Fdireccion" value="" size="80" maxlength="100" />
 						</td>
 					</tr>
 					<tr>
-						<td align="left">
+						<td width="50%" align="left">
 							<label><span class="required">*</span>TELÉFONO </label>
-							<input class="" name="Ftel" type="text" id="Ftel" value="" size="12" maxlength="12" title="número de teléfono" onkeypress="return vNumeros(event, this);" />
+							<input class="" name="Ftel" type="text" id="Ftel" value="" size="20" maxlength="25" title="número de teléfono" onkeypress="return vAbierta(event, this);" />
+						</td>
+						<td width="50%" align="left">
+							<label>TELÉFONO 2</label>
+							<input class="" name="Ftel2" type="text" id="Ftel2" value="" size="20" maxlength="25" title="número de teléfono adicional" onkeypress="return vAbierta(event, this);" />
+						</td>
+					</tr>
+				</table>				
+				<hr class="bleed-flush compact" />
+
+				<h4>Dirección</h4>
+				<table width="100%" cellpadding="5" cellspacing="0">
+					<tr>
+						<td valign="top" align="left">
+							<label>PROCEDENCIA </label>
+							<input class="" name="Fprocedencia" type="text" id="Fprocedencia" value="" size="60" maxlength="100" />
 						</td>
 					</tr>
 				</table>				

@@ -21,7 +21,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 				<?php
 					$sql="select ser.id_ser id, ser.nombre
 					from servicios ser
-					where id_tip_ser=".$id_tip_ser." order by nombre";
+					where id_est in (1) and id_tip_ser=".$id_tip_ser." order by nombre";
 					
 					$stid = mysql_query($sql);
 

@@ -113,6 +113,113 @@ function doing_ajax(url, param, divnotas) {
 
 		
 }
+
+function carga_iframe(script, tipo, task) {
+	var accion = '?tipo='+tipo+'&';
+	switch(task) {
+		case 'add':
+			accion += 'task=add';
+		break;
+		default: accion += 'task=add'
+	}
+	$('#if_nuevo').attr('src',script+'.php'+accion);
+}
+function cerrar_iframe() {
+	$('#if_div').toggle();
+}
+function only_add(objeto, url, param, notices) {
+	attemp = $('#' + notices);
+	var div = ( attemp == null )? '' : attemp;
+
+	if(div == '')
+		return false;
+	else
+		div.html('');
+
+	var urlOrigen = url + '.php';
+	var valortemp = '';
+	var arreglo = param.split("|");
+	var label = '';
+
+	for (var i = 0; i < arreglo.length; i++) {
+		valortemp = $('#' + arreglo[i]);
+		if(valortemp.attr('req') == 'req' && !valortemp.attr('disabled')) {
+
+			if(valortemp.val() == '') {
+
+				attemp = valortemp.attr('lab');
+				label = ( attemp == null )? '' : attemp;
+				mensaje = '';
+				if(label == '') {
+					mensaje = 'campo requerido.';
+				}else{
+					if(url=='eventos' && arreglo[i]=='ctotal')
+						mensaje = 'Seleccione algun servicio.'
+					else
+						mensaje = 'El campo '+label+' es requerido.'
+				}
+
+				div.html('<div class="notice2">' + mensaje + '</div>');
+				valortemp.focus();
+				div.slideDown('slow')
+				
+				return false;
+			}
+		}
+		if(urlOrigen=='salones.php' && arreglo[i]=='Femail') {
+			if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\D{2,4})+$/.test(valortemp.val()))) {
+				mensaje = 'Escriba un Email valido';
+
+				div.html('<div class="notice2">' + mensaje + '</div>');
+				valortemp.focus();
+				div.slideDown('slow')
+				
+				return false;
+			}
+		}
+	};
+
+	var param = 'task=add&'+$('#formulario').serialize();
+
+
+	$.ajax({
+		type: 'POST',
+		url: 'op_'+urlOrigen,
+		data: param,
+		beforeSend: function(){
+			$('#cargando').show();
+		},
+		success: function(msg){
+			if(msg == -1){
+				div.html('<div class=\"notice2\">Ocurrio un error al grabar los datos.</div>');
+				div.slideDown('slow');
+				
+			}else{
+				div.html('<div class=\"notice5\">Los cambios fueron guardados con exito.</div>');
+				div.slideDown('slow').delay(900);
+				
+				// actualizar listado de salones
+				var urlscript = 'ajax.php';
+				var divUpd = '#div_select_'+url;
+				var param = 'tabla=salones&id=Fsalon&name=Fsalon&value=id_sal&desc=nombre';
+				if(url == 'clientes')
+					param = 'tabla=clientes&id=Fcliente&name=Fcliente&value=id_cli&desc=nombre';
+
+				$(divUpd, window.parent.document).load(urlscript, param, function(){
+					parent.$.fancybox.close();
+				});
+				// cerrar poppup
+
+		}
+	},
+	complete: function(){
+		$('#cargando').hide('fast');
+	}
+});
+
+}
+
+
 function add(objeto, url, param, notices) {
 	attemp = $('#' + notices);
 	var div = ( attemp == null )? '' : attemp;
@@ -185,11 +292,15 @@ function add(objeto, url, param, notices) {
 				div.html('<div class=\"notice5\">Los cambios fueron guardados con exito.</div>');
 				div.slideDown('slow').delay(900);
 				
-				if(url == 'eventos')
-					urlOrigen = 'cotizaciones.php';
+				if(url == 'cotizaciones')
+					urlOrigen = 'eventos.php';
 				
 				if(confirm('¿Desea agregar otro registro?', 'Los cambios fueron guardados con exito.'))
-					window.location.href=urlOrigen + '?task=add';
+					if(url == 'pagos') {
+						window.location.href=urlOrigen + '?task=add&id_eve='+$('#Fideve').val();
+					}else {
+						window.location.href=urlOrigen + '?task=add';						
+					}
 				else
 					window.location.href=urlOrigen;
 			}
@@ -274,7 +385,7 @@ function update(objeto, url, param, notices) {
 			}else{
 				div.html('<div class=\"notice5\">Los cambios fueron guardados con exito.</div>');
 				div.slideDown('slow').delay(900);
-
+// return;
 				if(action=='exit')
 					window.location = urlOrigen;
 			}
@@ -1079,14 +1190,13 @@ function add_empleado(objeto){
 }
 
 function addsalones(objeto){
-	//var act = objeto.getAttribute('act');	
-	var urlOrigen = 'salones.php'
+	
+	var urlOrigen = 'salones_add.php'
+	var Fnombre = $('#Fnombre');
 	var Ftel = $('#Ftel');
-	var Festatus = $('#Festatus');
 	var div = $('#notices');
 	
 	div.html('');
-
 	
 	if(Ftel.val() == ''){
 		div.html('<div class=\"notice2\"> Escriba un teléfono valido.</div>');
@@ -1095,9 +1205,9 @@ function addsalones(objeto){
 		
 		return false;
 	}
-	if(Festatus.val() == ''){
-		div.html('<div class=\"notice2\"> Seleccione un estatus.</div>');
-		Festatus.focus();
+	if(Fnombre.val() == ''){
+		div.html('<div class=\"notice2\"> Escriba un nombre valido.</div>');
+		Fnombre.focus();
 		div.slideDown('slow')
 		
 		return false;
@@ -1108,7 +1218,8 @@ function addsalones(objeto){
 
 	$.ajax({
 		type: 'POST',
-		url: 'op_'+urlOrigen,
+		// url: 'op_'+urlOrigen,
+		url: 'op_salones.php',
 		data: param,
 		beforeSend: function(){
 			$('#cargando').show();
@@ -1123,8 +1234,6 @@ function addsalones(objeto){
 				div.html('<div class=\"notice5\">Los cambios fueron guardados con exito.</div>');
 				div.slideDown('slow').delay(900);					
 
-				if(act=='exit')
-					window.location = urlOrigen;
 			}
 		},
 		complete: function(){
@@ -1216,6 +1325,9 @@ function eliminar_registro(objeto){
 		case 'pago':
 			urlOrigen= "pagos.php";
 		break;
+		case 'tipo_evento':
+			urlOrigen= "tipo_eventos.php";
+		break;
 	}
 	
 	if(confirm('¿Está seguro que desea eliminar este registro?')){
@@ -1234,7 +1346,7 @@ function eliminar_registro(objeto){
 					alert('Ocurrio un error al eliminar el registro.');
 					
 				}else{
-					alert('Registro eliminado con exito');
+					alert('Registro eliminado con éxito');
 					window.location = urlOrigen;
 
 				}
@@ -1310,7 +1422,7 @@ function cambiarest(objeto){
 function exportar_pdf(objeto) {
 	var id = objeto.getAttribute('identif');
 	var tipo = objeto.getAttribute('tipo');
-	var url = 'pdf_cotizacion.php?id='+id;
+	var url = 'pdf_cotizacion.php?id='+id+'&tipo='+tipo;
 
 	window.open(url, '_blank','fullscreen=yes');
 }
@@ -1323,3 +1435,17 @@ function generar_reporte_pdf(objeto) {
 
 	window.open(url, '_blank','fullscreen=yes');
 }
+
+
+// function dibujar_grafica(string_generado, titulo, div) {
+// 	var data = google.visualization.arrayToDataTable([
+// 	  ['algo','algo'], string_generado
+// 	]);
+
+// 	var options = {
+// 	  title: titulo
+// 	};
+
+// 	var chart = new google.visualization.PieChart(document.getElementById(div);
+// 	chart.draw(data, options);
+// }

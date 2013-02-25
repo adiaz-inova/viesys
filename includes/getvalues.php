@@ -95,4 +95,23 @@
 
 			return $fechahoy;
 	}
+
+	function dame_la_fecha_otra_vez($fecha=null) {
+			date_default_timezone_set('America/Mexico_City');
+			$dias = Array('', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo');
+			$mes = Array("", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"); 
+			
+			
+				// $dias[date('N')].' '.date('j').' de '.$mes[date('n')].' de '.date('Y').'';
+			
+				#echo $fecha;
+				list($Xdia, $Xmes, $Xano) = explode('/', $fecha);
+
+				$Xdia = (int)$Xdia;
+				$Xmes = (int)$Xmes;
+
+				$fechahoy = $Xdia.' de '.$mes[$Xmes].' de '.$Xano.'';
+
+			return $fechahoy;
+	}
 ?>

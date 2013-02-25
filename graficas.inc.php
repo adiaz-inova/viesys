@@ -69,7 +69,7 @@ define('MODULO', 1100);
 		        ]);
 
 		        var options = {
-		          title: 'EVENTOS POR ESTATUS'
+		          title: 'COTIZACIONES Y EVENTOS POR ESTATUS'
 		        };
 
 		        var chart = new google.visualization.PieChart(document.getElementById('aquiva_lagraf'));
@@ -143,6 +143,7 @@ define('MODULO', 1100);
 					from eventos 
 					inner join clientes using(id_cli)
 					where estatus in ('vendido','cancelado','terminado') 
+					and clientes.id_est=1
 					group by id_cli
 					order by eventos desc
 					limit 10
@@ -167,7 +168,7 @@ define('MODULO', 1100);
 		        ]);
 
 		        var options = {
-		          title: 'COTIZACIONES POR CLIENTE'
+		          title: 'EVENTOS POR CLIENTE'
 		        };
 
 		        var chart = new google.visualization.PieChart(document.getElementById('aquiva_lagraf3'));
@@ -183,7 +184,8 @@ define('MODULO', 1100);
 			$sql="SELECT salones.nombre salon, count( * ) eventos
 					from eventos 
 					inner join salones using(id_sal)
-					where estatus in ('vendido','cancelado','terminado') 
+					where estatus in ('vendido','cancelado','terminado')
+					and salones.id_est=1
 					group by id_sal
 					order by eventos desc
 					limit 10
@@ -208,7 +210,7 @@ define('MODULO', 1100);
 		        ]);
 
 		        var options = {
-		          title: 'COTIZACIONES POR SALÓN'
+		          title: 'EVENTOS POR SALÓN'
 		        };
 
 		        var chart = new google.visualization.PieChart(document.getElementById('aquiva_lagraf4'));
@@ -225,7 +227,7 @@ define('MODULO', 1100);
 			$sql="SELECT tipo_evento.nombre tipodeevento, count( * ) eventos
 					from eventos 
 					inner join tipo_evento using(id_tip_eve)
-					where estatus in ('vendido','cancelado','terminado') 
+					where estatus in ('vendido','cancelado','terminado')
 					group by id_tip_eve
 					order by eventos desc
 					limit 10
@@ -250,7 +252,7 @@ define('MODULO', 1100);
 		        ]);
 
 		        var options = {
-		          title: 'COTIZACIONES POR TIPO DE EVENTO'
+		          title: 'EVENTOS POR TIPO DE EVENTO'
 		        };
 
 		        var chart = new google.visualization.PieChart(document.getElementById('aquiva_lagraf5'));

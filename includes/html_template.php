@@ -73,7 +73,16 @@
         });
       });
 
-
+    $(".fb-iframe").click(function() {
+        $.fancybox.open({
+          href : 'salones_add.html',
+          type : 'iframe',
+          scrolling: 'no',
+          width: 700,
+          padding : 5
+        });
+      });
+    
     if ($("#filtro").length) {
       $("#filtro").keypress(function (e) {        
         if(e.which == 13) {         
@@ -113,9 +122,13 @@
 </head>
 
 <body>
-  
+<!--   <div id="if_div" style="float:left;width:900px;height:600px;">
+    <iframe id="if_nuevo" src="salones_add.php?task=add" width="900" height="600"></iframe>
+  </div> -->
+
   <div id="cargando" style="display:none;"><img src="<?php echo $addruta ?>images/cargando.gif" width="16" height="16" border="0" /> Cargando... </div>
-  <div id="overlay" class="simplemodal-overlay" style=" display: none; filter:alpha(opacity=50);  -moz-opacity:0.5; -khtml-opacity: 0.5; opacity: 0.5;"></div>
+  <div id="overlay" class="simplemodal-overlay" style=" display: none; filter:alpha(opacity=50);  -moz-opacity:0.5; -khtml-opacity: 0.5; opacity: 0.5;">
+  </div>
   <?php if(!isset($no_encabezado)) { ?>
   <div id="vie_encabezado">
     <div id="vie_logo_content"><a href="index.php"><div id="vie_logo"></div></a></div>
@@ -145,17 +158,19 @@
           </a>
           <ul class="expanded section-nav">
           <?php
-          $arrParallel = array(-1, 100,700, 200, 300, 400, 500, 500, 600, 900, 1200, 1100, 500, 1000);
+          $arrParallel = array(-1, 100,700, 200, 300, 500, 400, 500, 500, 600, 900, 1300, 1200, 1100, 500, 1000);
           $arrMenu = array('Inicio'=>'index.php'
           ,'Empleados'=>'empleados.php'
           ,'Grupos'=>'grupos.php'
           ,'Clientes'=>'clientes.php'
           ,'Salones'=>'salones.php'
+          ,'Tipos de eventos'=>'tipo_eventos.php'
           ,'Servicios'=>'servicios.php'
           ,'Cotizaciones'=>'cotizaciones.php'
           ,'Eventos'=>'eventos.php'
           ,'Facturas'=>'facturas.php'
           ,'Pagos'=>'pagos.php'
+          ,'Gastos'=>'gastos.php'
           ,'Reportes'=>'reportes.php'
           ,'Gráficas'=>'graficas.php'
           ,'Calendario'=>'calendario_anual.php'

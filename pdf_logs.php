@@ -91,7 +91,7 @@ define('MODULO', 1200);
 
 			$sql = "select l.ip, l.host, l.browser, l.id_mod, l.id_emp
 			, date_format(l.date, '%d/%m/%Y')fecha
-			, date_format(l.date, '%r')hora
+			, date_format(l.date, '%T')hora
 			, l.date fechacom
 			, concat(emp.nombre,' ',emp.ape_pat,' ',emp.ape_mat) empleado
 			, gpo.nombre grupo

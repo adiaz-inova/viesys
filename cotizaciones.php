@@ -79,6 +79,10 @@ define('MODULO', 500);
 			$filtrar_por_empleado = (isset($id_emp) && $id_emp!='')? " and ev.id_emp=$id_emp " : "";
 			$filtrar_por_servicio = (isset($id_ser) && $id_ser!='')? " and serev.id_ser=$id_ser " : "";
 			$filtrar_por_salon = (isset($id_sal) && $id_sal!='')? " and ev.id_sal=$id_sal " : "";
+			$filtrar_por_fecha = (isset($ev_fecha) && $ev_fecha!='')? " and date_format(ev.fecha, '%d/%m/%Y')='$ev_fecha' " : "";
+			$filtrar_por_vigencia = (!isset($Fvigencia) or $Fvigencia!='')? " AND CURDATE() <= ev.fecha ":"";
+			$filtrar_por_tipo_evento = (isset($id_tipo_evento) && (int)$id_tipo_evento>0)? " AND ev.id_tip_eve = ".$id_tipo_evento:"";
+
 
 			$sql = "select distinct ev.id_eve			
 			, ev.id_tip_eve
@@ -95,17 +99,23 @@ define('MODULO', 500);
 			, concat(cli.nombre, ' ', cli.ape_pat) cliente
 			, tev.nombre tipodeevento
 			, ev.estatus estatus2
+			, GROUP_CONCAT(serv.nombre SEPARATOR '<br>')servicio
 			from eventos ev
 			inner join salones sal using(id_sal)
 			inner join clientes cli using(id_cli)
 			inner join tipo_evento tev using(id_tip_eve)
 			left join servicios_eventos serev using(id_eve)
+			inner join servicios serv using(id_ser)
 			where 1=1 "; /*and ev.estatus in('COTIZADO')*/ 
-			$sql .="AND CURDATE() <= ev.fecha
+			$sql .="
+			$filtrar_por_vigencia
 			$filtrar_por_cliente
 			$filtrar_por_empleado
 			$filtrar_por_servicio
 			$filtrar_por_salon
+			$filtrar_por_fecha
+			$filtrar_por_tipo_evento
+			group by id_eve
 			order by ev.fecha";
 		
 			$stid = mysql_query($sql);
@@ -345,14 +355,14 @@ define('MODULO', 500);
 				<div class="scrool" id="cont">
 					<table width="100%" cellspacing="0" cellpadding="3">
 						<tr class="Cabezadefila">
-							<th width="8%">No.</th>
+							<th width="5%">No.</th>
 							<th width="10%">Fecha</th>
-							<th width="7%">Hora</th>
+							<th width="5%">Hora</th>
 							<th width="15%">Tipo</th>
 							<th width="15%">Salón</th>
 							<th width="15%">Cliente</th>
-							<th width="5%">Edit</th>
-							<th width="5%">Estatus</th>
+							<th width="25%">Servicios</th>
+							<th width="10%">Estatus</th>
 						</tr>
 
 					<?php
@@ -369,6 +379,7 @@ define('MODULO', 500);
 						$fecha = $row['fecha'];
 						$hora = $row['hora'];
 						$cliente = $row['cliente'];
+						$servicio = $row['servicio'];
 						
 						# estatus : 
 						# - vigente : fecha aun no ha pasado
@@ -390,16 +401,18 @@ define('MODULO', 500);
 							<td align="center" class="celdaNormal"><?php echo $hora; ?></td>
 							<td align="left" class="celdaNormal"><?php echo $tipodeevento; ?></td>
 							<td align="left" class="celdaNormal"><?php echo $salon; ?></td>
-							<td align="center" class="celdaNormal"><?php echo $cliente; ?></td>
-							<td align="center" class="celdaNormal"><?php echo $editar; ?></td>
+							<td align="left" class="celdaNormal"><?php echo $cliente; ?></td>
+							<td align="left" class="celdaNormal"><?php echo $servicio; ?></td>
 							<td align="center" class="celdaNormal"><?php echo $estatus; ?></td>
+							<!-- <td align="center" class="celdaNormal"><?php echo $editar; ?></td> -->
+							<!-- <td align="center" class="celdaNormal"><?php echo $rechazar; ?></td> -->
 						</tr>
 					<?php
 					}			
 					?>			
 
 						<tr class="Cabezadefila">
-							<td colspan='8'><?php echo $registros; ?> Registros encontrados.</td>
+							<td colspan='9'><?php echo $registros; ?> Registros encontrados.</td>
 						</tr>
 					</table>
 				</div>
@@ -408,6 +421,8 @@ define('MODULO', 500);
 		break;
 		case 'edit': #- - - - - - - - - - - - - - -- - - MODIFICAR
 
+			/* NO SE USA 
+			
 			# Control de seguridad
 			if (!isset($id)) {
 				header('Location: '.$_SERVER['PHP_SELF']);
@@ -427,7 +442,7 @@ define('MODULO', 500);
 			, ev.cos_tot
 			, ev.fecha fecha2
 			, date_format(ev.fecha, '%d/%m/%y')fecha
-			, date_format(ev.hora, '%h')hora
+			, date_format(ev.hora, '%H')hora
 			, date_format(ev.hora, '%i')minuto
 			from eventos ev where 1=1 and ev.id_eve=".$id;
 			
@@ -541,7 +556,7 @@ define('MODULO', 500);
 						<td valign="top" align="left">
 							<label><span class="required">*</span>SALÓN</label>
 							<select class="" name="Fsalon" id="Fsalon" req="req" lab="Salón"  >
-								<option value="">seleccione</option>
+								<option value="">Seleccione Salón</option>
 								<?php
 									$sql="select id_sal, nombre from salones where id_est in(1) order by nombre";
 									
@@ -657,6 +672,7 @@ define('MODULO', 500);
 		</table>
 	</form>
 <?php
+		*/
 		break;
 		case 'add': #- - - - - - - - - - - - - - -- - - AGREGAR
 
