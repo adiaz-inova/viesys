@@ -158,7 +158,7 @@
           </a>
           <ul class="expanded section-nav">
           <?php
-          $arrParallel = array(-1, 100,700, 200, 300, 500, 400, 500, 500, 600, 900, 1300, 1200, 1100, 500, 1000);
+          $arrParallel = array(-1, 100,700, 200, 300, 7003, 400, 500, 500, 600, 900, 1300, 1200, 1100, 500, 1000);
           $arrMenu = array('Inicio'=>'index.php'
           ,'Empleados'=>'empleados.php'
           ,'Grupos'=>'grupos.php'

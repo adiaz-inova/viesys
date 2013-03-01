@@ -1,5 +1,5 @@
 <?php
-define('MODULO', 500);
+define('MODULO', 7003);
 
 	require('includes/getvalues.php');
 	require_once('includes/session_principal.php');
