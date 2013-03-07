@@ -87,7 +87,7 @@ define('MODULO', 300);
 						$tel = $row['tel'];
 						$empresa = $row['empresa'];
 						$accion = ( $row['estatus'] == 1)? '<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="salon" accion="suspender" title="Suspender" alt="Suspender"><img src="images/enabled2.png" border="0"></a>':'<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="salon" accion="activar" title="Activar" alt="Activar"><img src="images/disabled2.png" border="0"></a>';												
-						$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="salon" value="-" />';
+						$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="salon" value="-" class="rppermiso" />';
 						$ver_cotizaciones = '<a href="cotizaciones.php?id_sal='.$id.'">ver</a>';
 						$ver_eventos = '<a href="eventos.php?id_sal='.$id.'">ver</a>';
 
@@ -100,7 +100,7 @@ define('MODULO', 300);
 							<td align="center" class="celdaNormal"><?php echo $ver_cotizaciones; ?></td>
 							<td align="center" class="celdaNormal"><?php echo $ver_eventos; ?></td>
 							<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
-							<td align="center" class="celdaNormal"><a href="salones.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+							<td align="center" class="celdaNormal"><a href="salones.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 							<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 						</tr>
 					<?php

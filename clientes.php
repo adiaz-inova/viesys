@@ -93,7 +93,7 @@ define('MODULO', 200);
 						
 						$accion = (isset($row['estatus']) && $row['estatus'] == 1)? '<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="cliente" accion="suspender" title="Suspender" alt="Suspender"><img src="images/enabled2.png" border="0"></a>':'<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="cliente" accion="activar" title="Activar" alt="Activar"><img src="images/disabled2.png" border="0"></a>';
 																		
-						$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="cliente" value="-" />';
+						$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="cliente" value="-" class="rppermiso" />';
 
 						$cotizar = (isset($row['estatus']) && $row['estatus'] == 1)?'<input type="button" href="eventos.php?task=add&id_cli='.$id.'" onclick=";window.location.href=this.getAttribute(\'href\');return false;" value="Cotizar" />':'';
 
@@ -106,7 +106,7 @@ define('MODULO', 200);
 							<td align="left" class="celdaNormal"><?php echo $empresa; ?></td>
 							<td align="center" class="celdaNormal"><a href="cotizaciones.php?id_cli=<?php echo $id; ?>">VER</a></td>
 							<td align="center" class="celdaNormal"><a href="eventos.php?id_cli=<?php echo $id; ?>">VER</a></td>
-							<td align="center" class="celdaNormal"><a href="clientes.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+							<td align="center" class="celdaNormal"><a href="clientes.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 							<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 							<td align="center" class="celdaNormal"><?php echo $cotizar; ?></td>
 						</tr>
@@ -283,6 +283,30 @@ define('MODULO', 200);
 						<td width="50%" align="left">
 							<label><!--span class="required">*</span-->EMPRESA </label>
 							<input class="" name="Fempresa" type="text" id="Fempresa" value="" size="25" maxlength="60" />
+							<?php
+								$xsql = "select empresa as empresas from clientes where empresa is not null and empresa !='' group by empresa";
+								$xstid = mysql_query($xsql);
+								$empresas = '';
+								$contador = 1;
+								while($xrow = mysql_fetch_assoc($xstid)) {
+
+									if($contador == 1)
+										$empresas .= (isset($xrow['empresas']) and $xrow['empresas']!='')? '"'.$xrow['empresas'].'"': '';
+									else
+										$empresas .= (isset($xrow['empresas']) and $xrow['empresas']!='')? ',"'.$xrow['empresas'].'"': '';
+
+									$contador++;
+								}
+							?>
+
+							<script>
+							  $(function() {
+							    var availableTags = [<?php echo $empresas ?>];
+							    $( "#Fempresa" ).autocomplete({
+							      source: availableTags
+							    });
+							  });
+							  </script>
 						</td>
 						<td width="50%" align="left">
 							<label><span class="required">*</span>EMAIL </label>

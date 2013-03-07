@@ -93,7 +93,7 @@ function mostrar_calendario($dia,$mes,$ano){
 	inner join clientes cli using(id_cli)
 	inner join empleados emp using(id_emp)
 	where 1=1
-	and (estatus in('VENDIDO') or (estatus = 'COTIZADO'))
+	and (estatus in('VENDIDO','COTIZADO','TERMINADO'))
 	and (date_format(ev.fecha, '%c') = ".$mes." and date_format(ev.fecha, '%Y') = ".$ano.")
 	";
 	

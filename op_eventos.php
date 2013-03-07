@@ -68,12 +68,13 @@ define('MODULO', 500);
 
 			
 			$Fservicios = $_POST['Fservicios'];
+			$Fdetallesxserv = $_POST['Fdetallesxserv'];
 
 			if(count($Fservicios)>0) {
 				$i=0;
 				foreach ($Fservicios as $Fservicio) {
 
-					$qry3 = "INSERT INTO servicios_eventos (id_ser, id_eve, costo) values(".(int)$Fservicio.",".(int)$Fid.", ".$Fcosto[$i].")";
+					$qry3 = "INSERT INTO servicios_eventos (id_ser, id_eve, costo, detalle) values(".(int)$Fservicio.",".(int)$Fid.", ".$Fcosto[$i].", '".$Fdetallesxserv[$i]."')";
 					if(!$stid3 = mysql_query($qry3))
 						echo 'Ocurrio un error al actualizar los permisos del grupo.'.$qry3.'<br>';
 					$i++;

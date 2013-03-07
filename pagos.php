@@ -173,7 +173,7 @@ define('MODULO', 900);
 
 				$tipo = $row['tipo'];
 				$accion = ( $row['estatus'] == 1)? '<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="pago" accion="suspender" title="Suspender" alt="Suspender"><img src="images/enabled2.png" border="0"></a>':'<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="pago" accion="activar" title="Activar" alt="Activar"><img src="images/disabled2.png" border="0"></a>';												
-				$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="pago" value="-" />';
+				$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="pago" value="-"  class="rppermiso" />';
 				$clase = ($row['tipo']=='DEVOLUCION')?' class="numeros_rojos"':'';
 			?>
 				<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" id="row<?php echo $id; ?>">
@@ -187,7 +187,7 @@ define('MODULO', 900);
 					<td align="right" class="celdaNormal"><span <?php echo $clase ?>><?php echo number_format($iva,2); ?></span></td>
 					<td align="right" class="celdaNormal"><span <?php echo $clase ?>><?php echo number_format($total,2); ?></span></td>
 					<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
-					<td align="center" class="celdaNormal"><a href="pagos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+					<td align="center" class="celdaNormal"><a href="pagos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 				</tr>
 			<?php

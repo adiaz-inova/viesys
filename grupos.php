@@ -76,7 +76,7 @@ define('MODULO', 700);
 						
 						$accion = ( $row['estatus'] == 1)? '<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="grupo" accion="suspender" title="Suspender" alt="Suspender"><img src="images/enabled2.png" border="0"></a>':'<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="grupo" accion="activar" title="Activar" alt="Activar"><img src="images/disabled2.png" border="0"></a>';
 																		
-						$rem = ($id != $_SESSION[TOKEN.'GRUPO_ID'] && $usuarios==0)? '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="grupo" value="-" />' : '';
+						$rem = ($id != $_SESSION[TOKEN.'GRUPO_ID'] && $usuarios==0)? '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="grupo" value="-" class="rppermiso" />' : '';
 
 						if($id == $_SESSION[TOKEN.'GRUPO_ID'])
 							$accion = '';				
@@ -87,7 +87,7 @@ define('MODULO', 700);
 							<td align="center" class="celdaNormal"><?php echo $usuarios; ?></td>
 							<td align="center" class="celdaNormal"><?php echo $modulos; ?></td>
 							<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
-							<td align="center" class="celdaNormal"><a href="grupos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+							<td align="center" class="celdaNormal"><a href="grupos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 							<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 						</tr>
 					<?php

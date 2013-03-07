@@ -150,7 +150,7 @@ define('MODULO', 600);
 				$pagado = (isset($row['pagado']) && $row['pagado']==0)? 'NO' : 'SI';
 				
 				$accion = ( $row['estatus'] == 1)? '<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="factura" accion="suspender" title="Suspender" alt="Suspender"><img src="images/enabled2.png" border="0"></a>':'<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="factura" accion="activar" title="Activar" alt="Activar"><img src="images/disabled2.png" border="0"></a>';												
-				$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="factura" value="-" />';
+				$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="factura" value="-"  class="rppermiso" />';
 
 			?>
 				<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" id="row<?php echo $id; ?>">
@@ -162,7 +162,7 @@ define('MODULO', 600);
 					<td align="right" class="celdaNormal"><?php echo $total; ?></td>
 					<td align="center" class="celdaNormal"><?php echo $pagado; ?></td>
 					<!-- <td align="center" class="celdaNormal"><?php echo $accion; ?></td> -->
-					<td align="center" class="celdaNormal"><a href="facturas.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+					<td align="center" class="celdaNormal"><a href="facturas.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 				</tr>
 			<?php

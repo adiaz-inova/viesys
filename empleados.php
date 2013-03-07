@@ -93,7 +93,7 @@ define('MODULO', 100);
 					
 					$accion = ( $row['u_estatus'] == 1)? '<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="empleado" accion="suspender" title="Suspender" alt="Suspender"><img src="images/enabled2.png" border="0"></a>':'<a href="javascript:return; " onclick="activar_suspender(this)" attid="'.$id.'" tipo="empleado" accion="activar" title="Activar" alt="Activar"><img src="images/disabled2.png" border="0"></a>';
 																	
-					$rem = ($id != $_SESSION[TOKEN.'USUARIO_ID'])? '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="empleado" value="-" />' : '';
+					$rem = ($id != $_SESSION[TOKEN.'USUARIO_ID'])? '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="empleado" value="-" class="rppermiso" />' : '';
 
 					if($id == $_SESSION[TOKEN.'USUARIO_ID'])
 						$accion = '';				

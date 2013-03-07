@@ -1,5 +1,5 @@
 <?php
-define('MODULO', 400);
+define('MODULO', 7003);
 /* 
   * tipo_eventos.php
   * VIE 2012
@@ -70,7 +70,7 @@ define('MODULO', 400);
 
 						$id = $row['id'];
 						$tipodeevento = $row['tipodeevento'];
-						$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="tipo_evento" value="-" />';
+						$rem = '<input type="button" onclick="eliminar_registro(this);" identif="'.$id.'" tipo="tipo_evento" value="-" class="rppermiso" />';
 
 						?>
 						<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" id="row<?php echo $id; ?>">
@@ -78,7 +78,7 @@ define('MODULO', 400);
 							<td align="left" class="celdaNormal"><a href="tipo_eventos.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $tipodeevento; ?></a></td>
 							<td align="center" class="celdaNormal"><a href="cotizaciones.php?id_tipo_evento=<?php echo $id; ?>">VER</a></td>
 							<td align="center" class="celdaNormal"><a href="eventos.php?id_tipo_evento=<?php echo $id; ?>">VER</a></td>
-							<td align="center" class="celdaNormal"><a href="tipo_eventos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+							<td align="center" class="celdaNormal"><a href="tipo_eventos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 							<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 						</tr>
 					<?php

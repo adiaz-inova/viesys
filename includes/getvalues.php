@@ -45,7 +45,7 @@
 		}
 	}
 
-	
+	date_default_timezone_set('America/Mexico_City');
 #echo '$pag='.$pag.' -- $vie_max_regxpag='.$vie_max_regxpag;
 
 	//Funcion para formatear las cantidades monetarias

@@ -58,7 +58,7 @@ define('MODULO', 3001);
 			/*
 			$this->SetX($vie_margen);
 			$this->SetFont('Arial','',8);
-			$this->Cell(0,4, utf8_decode('Hora de elaboración: ').date('h:m:s a'),0,1,'R',0);
+			$this->Cell(0,4, utf8_decode('Hora de elaboración: ').date('h:i:s a'),0,1,'R',0);
 			*/
 			$this->Ln();
 			$this->Ln();
@@ -213,9 +213,10 @@ define('MODULO', 3001);
 				$this->Ln();
 				$sql="select ser.id_ser, ser.nombre servicio, (select 1 from servicios_eventos seev where seev.id_ser=ser.id_ser and seev.id_eve=".$id.")contratado
 								,(select seev.costo from servicios_eventos seev where seev.id_ser=ser.id_ser and seev.id_eve=".$id." )costo
-								, tser.nombre tipo
+								, tser.nombre tipo, detalle
 								from servicios ser
 								inner join tipo_servicio tser using(id_tip_ser)
+								inner join servicios_eventos sev ON ser.id_ser=sev.id_ser and sev.id_eve=".$id."
 								where 1=1
 								order by tipo, servicio";
 				$stidSer = mysql_query($sql);
@@ -239,6 +240,11 @@ define('MODULO', 3001);
 						$this->Cell(40, 5, $costo, 1, 0, 'R', 1);
 						$this->Cell(40, 5, $costo_con_iva, 1, 0, 'R', 1);
 						$this->Ln();
+
+						if (isset($rowSer['detalle']) and $rowSer['detalle'] != '') {
+							$this->SetX($vie_margen);
+							$this->MultiCell(190, 5, utf8_decode($rowSer['detalle']), 1, 'L', 1);
+						}
 
 						
 					}//if
@@ -377,7 +383,7 @@ define('MODULO', 3001);
 	$pdf->Generar();
 	$pdf->SetTitle($title);
 	$pdf->SetAuthor('VIE 2012');
-	$output = "F";
+	$output = "I";
 	$pdf->Output($archivo, $output);
 	/*
 	I: envía el fichero al navegador de forma que se usa la extensión (plug in) si está disponible. El nombre dado en nombre se usa si el usuario escoge la opción "Guardar como..." en el enlace que genera el PDF.
@@ -390,7 +396,7 @@ define('MODULO', 3001);
 	if($output == "F")
 	{
 		if (file_exists($archivo)){
-			//echo '<p>El archivo <a href="'.$archivo.'" target="_blank" class="ligaalreporte">'.$archivo.'</a> se genero exitosamente.</p>';
+			// echo '<p>El archivo <a href="'.$archivo.'" target="_blank" class="ligaalreporte">'.$archivo.'</a> se genero exitosamente.</p>';
 			if($tipo!='cotizaciontemp') {
 				header('Location:'.$archivo);
 			}

@@ -85,7 +85,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 					<td align="right" class="celdaNormal"><span <?php echo $clase ?>><?php echo number_format($iva,2); ?></span></td>
 					<td align="right" class="celdaNormal"><span <?php echo $clase ?>><?php echo number_format($total,2); ?></span></td>
 					<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
-					<td align="center" class="celdaNormal"><a href="pagos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+					<td align="center" class="celdaNormal"><a href="pagos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 				</tr>
 			<?php
@@ -191,7 +191,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 				$rechazar = (isset($row['estatus2']) && $row['estatus2']=='COTIZADO')?'<input type="button" onclick="cambiarest(this);" tipo="reject" identif="'.$id.'" value="Rechazar" lab="rechazado" />':'';
 				$notas = '<a class="fiframe" href="notas.php?id_eve='.$id.'">ver</a>';
 				$pdf = '<img src="images/pdf_icono.png" border="0" width="36" height="15" tipo="cotizacion" identif="'.$id.'" onclick="exportar_pdf(this);" style="cursor:pointer;" />';
-				$editar = (isset($row['estatus2']) && ($row['estatus2']=='VENDIDO' || $row['estatus2']=='COTIZADO'))?'<a href="eventos.php?task=edit&id='.$id.'" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a>':'';
+				$editar = (isset($row['estatus2']) && ($row['estatus2']=='VENDIDO' || $row['estatus2']=='COTIZADO'))?'<a href="eventos.php?task=edit&id='.$id.'" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a>':'';
 			?>
 				<tr onmouseover="this.className='filaActiva'" onmouseout="this.className='filaNormal'" class="filaNormal" id="row<?php echo $id; ?>">
 					<td align="center" class="celdaNormal"><?php echo $ver_evento; ?></td>
@@ -275,7 +275,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 					<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
 					<td align="center" class="celdaNormal"><a href="cotizaciones.php?id_ser=<?php echo $id; ?>">VER</a></td>
 					<td align="center" class="celdaNormal"><a href="eventos.php?id_ser=<?php echo $id; ?>">VER</a></td>
-					<td align="center" class="celdaNormal"><a href="servicios.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+					<td align="center" class="celdaNormal"><a href="servicios.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 				</tr>
 			<?php
@@ -369,7 +369,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 					<td align="right" class="celdaNormal"><?php echo $total; ?></td>
 					<td align="center" class="celdaNormal"><?php echo $pagado; ?></td>
 					<!-- <td align="center" class="celdaNormal"><?php echo $accion; ?></td> -->
-					<td align="center" class="celdaNormal"><a href="facturas.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+					<td align="center" class="celdaNormal"><a href="facturas.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 				</tr>
 			<?php
@@ -572,7 +572,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 					<td align="left" class="celdaNormal"><?php echo $empresa; ?></td>
 					<td align="center" class="celdaNormal"><a href="cotizaciones.php?id_cli=<?php echo $id; ?>">VER</a></td>
 					<td align="center" class="celdaNormal"><a href="eventos.php?id_cli=<?php echo $id; ?>">VER</a></td>
-					<td align="center" class="celdaNormal"><a href="clientes.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+					<td align="center" class="celdaNormal"><a href="clientes.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 					<td align="center" class="celdaNormal"><?php echo $cotizar; ?></td>
 				</tr>
@@ -634,7 +634,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 					<td align="center" class="celdaNormal"><?php echo $usuarios; ?></td>
 					<td align="center" class="celdaNormal"><?php echo $modulos; ?></td>
 					<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
-					<td align="center" class="celdaNormal"><a href="grupos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+					<td align="center" class="celdaNormal"><a href="grupos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 				</tr>
 			<?php
@@ -711,7 +711,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 					<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
 					<td align="left" class="celdaNormal"><a href="empleados.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $usuario; ?></a></td>					
 					<td align="left" class="celdaNormal"><a href="grupos.php?task=edit&id=<?php echo $grupoid; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $grupo; ?></a></td>
-					<!-- <td align="center" class="celdaNormal"><a href="empleados.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td> -->
+					<!-- <td align="center" class="celdaNormal"><a href="empleados.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td> -->
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 				</tr>
 			<?php
@@ -788,7 +788,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 					<td align="center" class="celdaNormal"><?php echo $ver_cotizaciones; ?></td>
 					<td align="center" class="celdaNormal"><?php echo $ver_eventos; ?></td>
 					<td align="center" class="celdaNormal"><?php echo $accion; ?></td>
-					<td align="center" class="celdaNormal"><a href="salones.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+					<td align="center" class="celdaNormal"><a href="salones.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 				</tr>
 			<?php
@@ -918,7 +918,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 					<td align="left" class="celdaNormal"><a href="tipo_eventos.php?task=edit&id=<?php echo $id; ?>" title="Ver detalles" alt="Ver detalles"><?php echo $tipodeevento; ?></a></td>
 					<td align="center" class="celdaNormal"><a href="cotizaciones.php?id_tipo_evento=<?php echo $id; ?>">VER</a></td>
 					<td align="center" class="celdaNormal"><a href="eventos.php?id_tipo_evento=<?php echo $id; ?>">VER</a></td>
-					<td align="center" class="celdaNormal"><a href="tipo_eventos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a></td>
+					<td align="center" class="celdaNormal"><a href="tipo_eventos.php?task=edit&id=<?php echo $id; ?>" title="Editar" alt="Editar" class="rppermiso"><img src="images/Edit-icon-16.png" border="0"></a></td>
 					<td align="center" class="celdaNormal"><?php echo $rem; ?></td>
 				</tr>
 			<?php

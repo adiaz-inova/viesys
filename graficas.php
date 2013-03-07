@@ -53,12 +53,12 @@ define('MODULO', 1100);
 
 			<ul class="expanded section-nav" style="list-style-type: none;">
 				<li>
-					<a href="#" onclick="cargar_filtros(this, 'div_filtros');" tipo="eventosxestatus">VISUALIZAR MONITOR DE EVENTOS</a>
-				</li>
-				<!--li>
-					<a href="#" onclick="cargar_filtros(this, 'div_filtros');" tipo="cotizacioneshoy">GRÁFICA DE COTIZACIONES AL DÍA</a>
+					<a href="#" onclick="cargar_filtros(this, 'div_filtros');" tipo="eventos">VISUALIZAR MONITOR DE EVENTOS</a>
 				</li>
 				<li>
+					<a href="#" onclick="cargar_filtros(this, 'div_filtros');" tipo="cotizaciones">VISUALIZAR MONITOR DE COTIZACIONES</a>
+				</li>
+				<!--li>
 					<a href="#" onclick="cargar_filtros(this, 'div_filtros');" tipo="eventosxcliente">GRÁFICA DE EVENTOS POR CLIENTE</a>
 				</li>
 				<li>

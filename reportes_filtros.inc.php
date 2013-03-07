@@ -20,18 +20,20 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 			monthNames: ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
 			dayNames: ["Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado"],
 			dayNamesMin: ["Do","Lu","Ma","Mi","Ju","Vi","Sa"],
-			showAnim: "slide"			
+			showAnim: "slide",
+	      	changeMonth: true,
+	      	changeYear: true
 		});
 		
 		$("#Fdesde2").datepicker({
 			altField: "#Fdesde",
-	        altFormat: "yy-mm-dd",
-	        maxDate: "+0d"
+	        altFormat: "yy-mm-dd"
+	        // maxDate: "+0d"
 		});
 		$("#Fhasta2").datepicker({
 			altField: "#Fhasta",
-	        altFormat: "yy-mm-dd",
-	        maxDate: "+0d"
+	        altFormat: "yy-mm-dd"
+	        // maxDate: "+0d"
 		});
 		$("#Fdesde2").change(function () {
 			var min= $("#Fdesde2").datepicker("getDate");
@@ -156,7 +158,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 									</select>
 								</td>
 							</tr>
-							<input type="hidden" name="Ftiposer" id="Ftiposer" value="5">
+							<!-- <input type="hidden" name="Ftiposer" id="Ftiposer" value="5"> -->
 							<!-- <tr>
 								<td align="right"><label for="Ftiposer">Tipo de servicio: </label></td>
 								<td align="left">
@@ -214,35 +216,7 @@ $PaSpOrT = true; //esta pagino no requiere permisos, solo session
 		break;
 		case 'logs':
 			?>
-	<script type="text/javascript">
-	$(document).ready(function() {
 
-		$.datepicker.setDefaults({
-			inline: true,
-			dateFormat: "dd/mm/yy",
-			numberOfMonths: 1,
-			monthNames: ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
-			dayNames: ["Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado"],
-			dayNamesMin: ["Do","Lu","Ma","Mi","Ju","Vi","Sa"],
-			showAnim: "slide"			
-		});
-		
-		$("#Fdesde2").datepicker({
-			altField: "#Fdesde",
-	        altFormat: "yy-mm-dd",
-	        maxDate: "+0d"
-		});
-		$("#Fhasta2").datepicker({
-			altField: "#Fhasta",
-	        altFormat: "yy-mm-dd",
-	        maxDate: "+0d"
-		});
-		$("#Fdesde2").change(function () {
-			var min= $("#Fdesde2").datepicker("getDate");
-			$("#Fhasta2").datepicker( "option", "minDate", min );
-		});
-	})
-	</script>
 	<div class="boxed-group">
 		<h3>FILTROS - REPORTE DE INGRESOS AL SISTEMA</h3>
 		<div class="boxed-group-inner clearfix">

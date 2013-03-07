@@ -13,7 +13,7 @@ define('MODULO', 500);
 	require_once('includes/getvalues.php');
 	require_once('includes/session_principal.php');
 	
-	if( !isset($task) || trim($task) == '')
+	if ( !isset($task) || trim($task) == '')
 		$task = 'list';
 
 	/* incluyo mis js extras antes de llamar el header*/
@@ -24,20 +24,17 @@ define('MODULO', 500);
 	}
 
 	function add2list() {
-		var destino = $("#list_servicios");
-		var Ftipoeve = $("#Ftipoeve");
-		var detalle = $("#detalle");
-		// alert(detalle.val())
-		var div = $("#notices");
+	    "use strict";
+	    var destino = $("#list_servicios"), Ftipoeve = $("#Ftipoeve"), detalle = $("#detalle"), div = $("#notices");
+	    // alert(detalle.val())
 
-		if(Ftipoeve.val() != null && Ftipoeve.val() !="") {
-
-			var Fservicio = $("#Fservicio");
-			if(Fservicio.val() != null && Fservicio.val() !="") {
+	    if (Ftipoeve.val() !== null && Ftipoeve.val() !== "") {
+	        var Fservicio = $("#Fservicio");
+	        if (Fservicio.val() !== null && Fservicio.val() !== "") {
 				var Fcosto = $("#Fcosto");
 				var costovalido = parseFloat(Fcosto.val());
 				  
-				if(Fcosto.val() == null || Fcosto.val() =="" || isNaN(costovalido) || costovalido==0) {
+				if (Fcosto.val() == null || Fcosto.val() == "" || isNaN(costovalido) || costovalido == 0) {
 					div.html("<span class=\"aviso\">Introduzca un costo valido para el servicio.</span>");
 					Fcosto.focus();
 					return false;
@@ -47,11 +44,11 @@ define('MODULO', 500);
 					var cadserv = "";
 
 					//esta parte solo arma la cadena de arrserv
-					if(arrserv.val()=="") {
+					if (arrserv.val()=="") {
 						cadserv = Fservicio.val()+"|";
 					}else {
 						var arritems = arrserv.val().split("|");
-						if($.inArray(""+Fservicio.val()+"", arritems) != -1) {
+						if ($.inArray(""+Fservicio.val()+"", arritems) != -1) {
 							var costovalidoTemp = parseFloat($("#Fcostoxserv"+Fservicio.val()).val());
 							// primero le resto su mismo valor anterior
 							var total_sincomas = ctotal.val().replace(",","");
@@ -79,7 +76,7 @@ define('MODULO', 500);
 					respaldo += "<div id=\"list_item_serv"+Fservicio.val()+"\"><input type=\"hidden\" value=\""+costoxserv+"\" name=\"Fservicios[]\" /><input type=\"button\" value=\"-\" onclick=\"quitar_servicio(this)\" identif=\""+Fservicio.val()+"\" class=\"ui-button ui-widget ui-state-default ui-corner-all\" role=\"button\" ><textarea name=\"Fdetallesxserv[]\" id=\"Fdetallesxserv"+Fservicio.val()+"\">"+detalle.val()+"</textarea><input type=\"text\" value=\""+Fcosto.val()+"\" name=\"Fcostoxserv[]\" id=\"Fcostoxserv"+Fservicio.val()+"\" readonly=\"readonly\" style=\"text-align:right;\"/> <span>"+$("#Fservicio option[value=\""+Fservicio.val()+"\"]").text()+"</span></div>";
 					destino.html(respaldo);
 					
-					if(ctotal.val()=="")
+					if (ctotal.val()=="")
 						ctotal.val(0);
 					
 					var total_sincomas = ctotal.val().replace(",","");
@@ -107,7 +104,7 @@ define('MODULO', 500);
 	function quitar_servicio(objeto) {
 		var id = objeto.getAttribute("identif");
 		var ctotal = $("#ctotal");
-		if(ctotal.val() != ""){
+		if (ctotal.val() != ""){
 			var costovalido = parseFloat($("#Fcostoxserv"+id).val());
 			var resta = parseFloat(ctotal.val()) - costovalido;
 			var iva = resta * 0.16;
@@ -124,10 +121,10 @@ define('MODULO', 500);
 
 		var arrserv = $("#arrserv");
 		var cadserv = "";
-		if(arrserv.val()!="") {
+		if (arrserv.val()!="") {
 			var arritems = arrserv.val().split("|");
 			for(var i=0; i<arritems.length; i++) {
-				if(arritems[i] != id)
+				if (arritems[i] != id)
 					cadserv += arritems[i]+"|";
 			}
 		}
@@ -155,12 +152,12 @@ define('MODULO', 500);
 
 	$js_extras_onready.='$(".inpservicios").change(function() {
 		ctotal = $("#ctotal").val();
-		if(ctotal != "")
+		if (ctotal != "")
 			ctotal = parseFloat(ctotal);
 		else
 			ctotal = 0.0;
 
-		if($(this).attr("checked")) {
+		if ($(this).attr("checked")) {
 			$("#Fcosto"+$(this).val()).removeAttr("disabled");
 			$("#Fcosto"+$(this).val()).focus()
 		}else {
@@ -173,7 +170,7 @@ define('MODULO', 500);
 
 	$(".inpcostos").change(function() {
 		ctotal = $("#ctotal").val();
-		if(ctotal != "")
+		if (ctotal != "")
 			ctotal = parseFloat(ctotal);
 		else
 			ctotal = 0.0;
@@ -184,7 +181,7 @@ define('MODULO', 500);
 	});
 
 	$("#Ffactura").change(function() {
-		if($(this).attr("checked")) {
+		if ($(this).attr("checked")) {
 			$("#span_ccosto").css("display","");
 			$("#span_civa").css("display","");
 		}else {
@@ -274,7 +271,7 @@ define('MODULO', 500);
 											$stidCli = mysql_query($sql);
 
 											while (($rowPer = mysql_fetch_assoc($stidCli))) {
-												if( $id_cli == $rowPer['id_cli']) {
+												if ( $id_cli == $rowPer['id_cli']) {
 													echo '	<option selected="selected" value="'.$rowPer['id_cli'].'">'.$rowPer['nombre'].'</option>';
 												}else{	
 													echo '	<option value="'.$rowPer['id_cli'].'">'.$rowPer['nombre'].'</option>';
@@ -297,7 +294,7 @@ define('MODULO', 500);
 											$stidSal = mysql_query($sql);
 
 											while (($rowSal = mysql_fetch_assoc($stidSal))) {
-												if( $rowSal['id_sal'] == $id_sal) {
+												if ( $rowSal['id_sal'] == $id_sal) {
 													echo '	<option selected="selected" value="'.$rowSal['id_sal'].'">'.$rowSal['nombre'].'</option>';
 												}else{	
 													echo '	<option value="'.$rowSal['id_sal'].'">'.$rowSal['nombre'].'</option>';
@@ -321,7 +318,7 @@ define('MODULO', 500);
 											$stidEmp = mysql_query($sql);
 
 											while (($rowPer = mysql_fetch_assoc($stidEmp))) {
-												if( $id_emp == $rowPer['id_emp']) {
+												if ( $id_emp == $rowPer['id_emp']) {
 													echo '	<option selected="selected" value="'.$rowPer['id_emp'].'">'.$rowPer['nombre'].'</option>';
 												}else{	
 													echo '	<option value="'.$rowPer['id_emp'].'">'.$rowPer['nombre'].'</option>';
@@ -345,7 +342,7 @@ define('MODULO', 500);
 											$stidSer = mysql_query($sql);
 
 											while (($rowPer = mysql_fetch_assoc($stidSer))) {
-												if( $id_ser == $rowPer['id_ser']) {
+												if ( $id_ser == $rowPer['id_ser']) {
 													echo '	<option selected="selected" value="'.$rowPer['id_ser'].'">'.$rowPer['nombre'].'</option>';
 												}else{	
 													echo '	<option value="'.$rowPer['id_ser'].'">'.$rowPer['nombre'].'</option>';
@@ -369,7 +366,7 @@ define('MODULO', 500);
 											$stidTiev = mysql_query($sql);
 
 											while (($rowPer = mysql_fetch_assoc($stidTiev))) {
-												if( $id_tip_eve == $rowPer['id_tip_eve']) {
+												if ( $id_tip_eve == $rowPer['id_tip_eve']) {
 													echo '	<option selected="selected" value="'.$rowPer['id_tip_eve'].'">'.$rowPer['nombre'].'</option>';
 												}else{	
 													echo '	<option value="'.$rowPer['id_tip_eve'].'">'.$rowPer['nombre'].'</option>';
@@ -408,29 +405,29 @@ define('MODULO', 500);
 										echo '<option value="10">Octubre</option>';
 										echo '<option value="11">Noviembre</option>';
 										echo '<option value="12">Diciembre</option>';
-										/*if(date('m') == '01') echo '<option value="01" selected="selected">Enero</option>';
+										/*if (date('m') == '01') echo '<option value="01" selected="selected">Enero</option>';
 										else echo '<option value="01">Enero</option>';
-										if(date('m') == '02') echo '<option value="02" selected="selected">Febrero</option>';
+										if (date('m') == '02') echo '<option value="02" selected="selected">Febrero</option>';
 										else echo '<option value="02">Febrero</option>';
-										if(date('m') == '03') echo '<option value="03" selected="selected">Marzo</option>';
+										if (date('m') == '03') echo '<option value="03" selected="selected">Marzo</option>';
 										else echo '<option value="03">Marzo</option>';
-										if(date('m') == '04') echo '<option value="04" selected="selected">Abril</option>';
+										if (date('m') == '04') echo '<option value="04" selected="selected">Abril</option>';
 										else echo '<option value="04">Abril</option>';
-										if(date('m') == '05') echo '<option value="05" selected="selected">Mayo</option>';
+										if (date('m') == '05') echo '<option value="05" selected="selected">Mayo</option>';
 										else echo '<option value="05">Mayo</option>';
-										if(date('m') == '06') echo '<option value="06" selected="selected">Junio</option>';
+										if (date('m') == '06') echo '<option value="06" selected="selected">Junio</option>';
 										else echo '<option value="06">Junio</option>';
-										if(date('m') == '07') echo '<option value="07" selected="selected">Julio</option>';
+										if (date('m') == '07') echo '<option value="07" selected="selected">Julio</option>';
 										else echo '<option value="07">Julio</option>';
-										if(date('m') == '08') echo '<option value="08" selected="selected">Agosto</option>';
+										if (date('m') == '08') echo '<option value="08" selected="selected">Agosto</option>';
 										else echo '<option value="08">Agosto</option>';
-										if(date('m') == '09') echo '<option value="09" selected="selected">Septiembre</option>';
+										if (date('m') == '09') echo '<option value="09" selected="selected">Septiembre</option>';
 										else echo '<option value="09">Septiembre</option>';
-										if(date('m') == '10') echo '<option value="10" selected="selected">Octubre</option>';
+										if (date('m') == '10') echo '<option value="10" selected="selected">Octubre</option>';
 										else echo '<option value="10">Octubre</option>';
-										if(date('m') == '11') echo '<option value="11" selected="selected">Noviembre</option>';
+										if (date('m') == '11') echo '<option value="11" selected="selected">Noviembre</option>';
 										else echo '<option value="11">Noviembre</option>';
-										if(date('m') == '12') echo '<option value="12" selected="selected">Diciembre</option>';
+										if (date('m') == '12') echo '<option value="12" selected="selected">Diciembre</option>';
 										else echo '<option value="12">Diciembre</option>';
 										*/
 										?>
@@ -509,7 +506,7 @@ define('MODULO', 500);
 						$pagar = (isset($row['pagado']) && $row['pagado']==0 && $row['estatus']=='VENDIDO')?'<input type="button" href="pagos.php?task=add&id_eve='.$id.'" onclick=";window.location.href=this.getAttribute(\'href\');return false;" value="Pagar" />':'';
 						$editar = (isset($row['estatus']) && ($row['estatus']=='VENDIDO' || $row['estatus']=='COTIZADO'))?'<a href="eventos.php?task=edit&id='.$id.'" title="Editar" alt="Editar"><img src="images/Edit-icon-16.png" border="0"></a>':'';
 						# Proceso para cambiar estatus a terminado
-						if($row['vigencia'] == 'VENCIDA' && $estatus == 'VENDIDO') {
+						if ($row['vigencia'] == 'VENCIDA' && $estatus == 'VENDIDO') {
 							$sqlTer = "UPDATE eventos SET estatus='TERMINADO' WHERE id_eve= ".$id."";
 							$stidTer = mysql_query($sqlTer);
 						}
@@ -549,29 +546,28 @@ define('MODULO', 500);
 			$editar_tipo = (isset($editar_tipo) && $editar_tipo != '')? '<input type="hidden" name="editar_tipo" id="editar_tipo" value="'.$editar_tipo.'">':'';
 
 			# Consultamos la informacion del usuario
-			$sql="
-			select 
-			ev.id_eve
-			, ev.id_emp
-			, emp.nombre, emp.ape_pat, emp.ape_mat
-			, ev.id_cli
-			, ev.id_sal
-			, ev.id_tip_eve
-			, ev.num_personas personas
-			, ev.pagado
-			, ev.estatus
-			, ev.cos_tot
-			, ev.facturar
-			, ev.fecha fecha2
-			, ev.observaciones
-			, date_format(ev.fecha, '%d/%m/%y')fecha
-			, date_format(ev.falta, '%d/%m/%y')falta
-			, date_format(ev.hora, '%H')hora
-			, date_format(ev.hora, '%i')minuto
-			from eventos ev 
-			left join empleados emp using(id_emp)
-			where 1=1 
-			and ev.id_eve=".$id;
+			$sql="select 
+				ev.id_eve
+				, ev.id_emp
+				, emp.nombre, emp.ape_pat, emp.ape_mat
+				, ev.id_cli
+				, ev.id_sal
+				, ev.id_tip_eve
+				, ev.num_personas personas
+				, ev.pagado
+				, ev.estatus
+				, ev.cos_tot
+				, ev.facturar
+				, ev.fecha fecha2
+				, ev.observaciones
+				, date_format(ev.fecha, '%d/%m/%y')fecha
+				, date_format(ev.falta, '%d/%m/%y')falta
+				, date_format(ev.hora, '%H')hora
+				, date_format(ev.hora, '%i')minuto
+				from eventos ev 
+				left join empleados emp using(id_emp)
+				where 1=1 
+				and ev.id_eve=".$id;
 			
 			$stid = mysql_query($sql);
 			$row = mysql_fetch_assoc($stid);
@@ -603,7 +599,7 @@ define('MODULO', 500);
 										
 										while ($conta < 24) {
 											$cadena = str_pad($conta, 2, '0', STR_PAD_LEFT);
-											if($conta == $row['hora']) {
+											if ($conta == $row['hora']) {
 												echo '	<option selected="selected" value="'.$cadena.'">'.$cadena.'</option>';
 											}else{	
 												echo '	<option value="'.$cadena.'">'.$cadena.'</option>';
@@ -614,22 +610,22 @@ define('MODULO', 500);
 								</select>
 								<select name="Fminuto" id="Fminuto">
 									<?php
-									if($row['minuto'] == '00')
+									if ($row['minuto'] == '00')
 										echo '<option value="00" selected="selected">00</option>';
 									else
 										echo '<option value="00" >00</option>';
 
-									if($row['minuto'] == '15')
+									if ($row['minuto'] == '15')
 										echo '<option value="15" selected="selected">15</option>';
 									else
 										echo '<option value="15" >15</option>';
 
-									if($row['minuto'] == '30')
+									if ($row['minuto'] == '30')
 										echo '<option value="30" selected="selected">30</option>';
 									else
 										echo '<option value="30" >30</option>';
 
-									if($row['minuto'] == '45')
+									if ($row['minuto'] == '45')
 										echo '<option value="45" selected="selected">45</option>';
 									else
 										echo '<option value="45" >45</option>';
@@ -645,7 +641,7 @@ define('MODULO', 500);
 									$stid = mysql_query($sql);
 
 									while (($rowPer = mysql_fetch_assoc($stid))) {
-										if( $rowPer['id_tip_eve'] == $row['id_tip_eve']) {
+										if ( $rowPer['id_tip_eve'] == $row['id_tip_eve']) {
 											echo '	<option selected="selected" value="'.$rowPer['id_tip_eve'].'">'.$rowPer['nombre'].'</option>';
 										}else{	
 											echo '	<option value="'.$rowPer['id_tip_eve'].'">'.$rowPer['nombre'].'</option>';
@@ -672,7 +668,7 @@ define('MODULO', 500);
 										$stid = mysql_query($sql);
 
 										while (($rowPer = mysql_fetch_assoc($stid))) {
-											if( $rowPer['id_sal'] == $row['id_sal']) {
+											if ( $rowPer['id_sal'] == $row['id_sal']) {
 												echo '	<option selected="selected" value="'.$rowPer['id_sal'].'">'.$rowPer['nombre'].'</option>';
 											}else{	
 												echo '	<option value="'.$rowPer['id_sal'].'">'.$rowPer['nombre'].'</option>';
@@ -696,7 +692,7 @@ define('MODULO', 500);
 									$stid = mysql_query($sql);
 
 									while (($rowPer = mysql_fetch_assoc($stid))) {
-										if( $rowPer['id_cli'] == $row['id_cli']) {
+										if ( $rowPer['id_cli'] == $row['id_cli']) {
 											echo '	<option selected="selected" value="'.$rowPer['id_cli'].'">'.$rowPer['nombre'].'</option>';
 										}else{	
 											echo '	<option value="'.$rowPer['id_cli'].'">'.$rowPer['nombre'].'</option>';
@@ -741,7 +737,9 @@ define('MODULO', 500);
 								</select>
 							</td> -->
 							<td width="40%" valign="top" align="left" id="selServ"></td>
-							<script language="javascript"> carga('servicios', 'selServ'); </script>
+							<script language="javascript">
+								carga('servicios', 'selServ'); 
+							</script>
 							<td width="30%" valign="top" align="left">
 								<label><span class="required">*</span>COSTO</label>
 								$ <input type="text" name="Fcosto" id="Fcosto" value="" size="10" style="text-align:right;"  onkeypress="return vFlotante(event, this);" />
@@ -749,12 +747,18 @@ define('MODULO', 500);
 							</td>
 						</tr>
 						<tr>
+							<td colspan="3">
+								<label>DETALLE DEL SERVICIO </label>
+								<textarea name="detalle" id="detalle" cols="60" rows="5"></textarea></td>
+						</tr>
+						<tr>
 							<td colspan="3" id="list_servicios">
 								<?php
-								$sql="select ser.id_ser, ser.nombre, (select 1 from servicios_eventos seev where seev.id_ser=ser.id_ser and seev.id_eve=".$id.")contratado
+								$sql="select serev.detalle, ser.id_ser, ser.nombre, (select 1 from servicios_eventos seev where seev.id_ser=ser.id_ser and seev.id_eve=".$id.")contratado
 								,(select seev.costo from servicios_eventos seev where seev.id_ser=ser.id_ser and seev.id_eve=".$id." )costo
 								from servicios ser
-								where id_est in(1)
+								inner join servicios_eventos serev USING(id_ser)
+								where id_est in(1) and serev.id_eve=".$id."
 								order by nombre";
 								$stidSer = mysql_query($sql);
 
@@ -763,19 +767,33 @@ define('MODULO', 500);
 								$list_ctotal = 0;
 								while (($rowSer = mysql_fetch_assoc($stidSer))) {
 
-									if($rowSer['contratado']=='1') {
+									if ($rowSer['contratado']=='1') {
 										$list_id_ser = $rowSer['id_ser'];
 										$list_id_nombre = $rowSer['nombre'];
 										$list_servicios .= $list_id_ser.'|';
+										// $rowSer['detalle'] = str_replace('', replace, $rowSer['detalle']);
 
 										echo '
 										<div id="list_item_serv'.$list_id_ser.'">
 											<input type="hidden" value="'.$list_id_ser.'" name="Fservicios[]" />
 											<input type="button" value="-" onclick="quitar_servicio(this)" identif="'.$list_id_ser.'" class="ui-button ui-widget ui-state-default ui-corner-all" role="button" />
+											<textarea name="Fdetallesxserv[]" id="Fdetallesxserv"'.$list_id_ser.'">'.$rowSer['detalle'].'</textarea>
 											<input type="text" value="'.$rowSer['costo'].'" name="Fcostoxserv[]" id="Fcostoxserv'.$list_id_ser.'" readonly="readonly" style="text-align:right;" />
 											<span>'.$list_id_nombre.'</span>
 										</div>';
+// <div id="list_item_serv12">
+// <input type="hidden" value="12.00" name="Fservicios[]">
+// <input type="button" value="-" onclick="quitar_servicio(this)" identif="12" class="ui-button ui-widget ui-state-default ui-corner-all" role="button">
+// <textarea name="Fdetallesxserv[]" id="Fdetallesxserv12">sdasdsa
+// das
 
+// das
+// d
+// asd
+// asd</textarea>
+// <input type="text" value="234" name="Fcostoxserv[]" id="Fcostoxserv12" readonly="readonly" style="text-align:right;">
+// <span>Piano Iluminado</span>
+// </div>
 										$list_ctotal += $rowSer['costo'];
 									}
 
@@ -830,7 +848,7 @@ define('MODULO', 500);
 			</div>
 			<script type="text/javascript">
 				$(document).ready(function() {
-					<?php if(isset($row['facturar']) && $row['facturar']=='1') { ?>
+					<?php if (isset($row['facturar']) && $row['facturar']=='1') { ?>
 					$("#Ffactura").attr("checked","checked");
 					$("#span_ccosto").css("display","");
 					$("#span_civa").css("display","");
@@ -916,7 +934,7 @@ define('MODULO', 500);
 											$stid = mysql_query($sql);
 
 											while (($rowPer = mysql_fetch_assoc($stid))) {
-												if( $rowPer['id_sal'] == $row['id_sal']) {
+												if ( $rowPer['id_sal'] == $row['id_sal']) {
 													echo '	<option selected="selected" value="'.$rowPer['id_sal'].'">'.$rowPer['nombre'].'</option>';
 												}else{	
 													echo '	<option value="'.$rowPer['id_sal'].'">'.$rowPer['nombre'].'</option>';
@@ -955,7 +973,7 @@ define('MODULO', 500);
 											$stid = mysql_query($sql);
 
 											while (($rowPer = mysql_fetch_assoc($stid))) {
-												if( $rowPer['id_cli'] == $id_cli) {
+												if ( $rowPer['id_cli'] == $id_cli) {
 													echo '	<option selected="selected" value="'.$rowPer['id_cli'].'">'.$rowPer['nombre'].'</option>';
 												}else{	
 													echo '	<option value="'.$rowPer['id_cli'].'">'.$rowPer['nombre'].'</option>';

@@ -55,7 +55,7 @@ define('MODULO', 3001);
 			$this->Cell(0,4, utf8_decode('Fecha de elaboración: ').date('d/m/Y'),0,1,'R',0);
 			$this->SetX($vie_margen);
 			$this->SetFont('Arial','',8);
-			$this->Cell(0,4, utf8_decode('Hora de elaboración: ').date('h:m:s a'),0,1,'R',0);
+			$this->Cell(0,4, utf8_decode('Hora de elaboración: ').date('h:i:s a'),0,1,'R',0);
 			$this->Ln();
 
 
@@ -89,6 +89,7 @@ define('MODULO', 3001);
 			$this->SetLineWidth(.1);//ancho lineas
 			$this->SetFontSize(8);
 
+			// echo 
 			$sql="
 			select distinct
 			ev.id_eve
@@ -115,8 +116,8 @@ define('MODULO', 3001);
 			inner join servicios_eventos seve using( id_eve )
 			left join servicios serv using( id_ser )
 			left join tipo_servicio tser using( id_tip_ser ) 
-			left join factura_serv_even fac using( id_ser_eve )
-			inner join clientes cli using( id_cli )
+			left join facturas fac using( id_eve )
+			inner join clientes cli on cli.id_cli=ev.id_cli
 			inner join salones sal using( id_sal )
 			inner join empleados emp using( id_emp ) 
 			where 1 ".$addsql."
@@ -200,13 +201,14 @@ define('MODULO', 3001);
 				$this->Cell(40, 5, utf8_decode('COSTO'), 1, 0, 'C', 1);
 				$this->Ln();
 
-				$sql="select ser.id_ser, ser.nombre servicio, (select 1 from servicios_eventos seev where seev.id_ser=ser.id_ser and seev.id_eve=".$id.")contratado
-								,(select seev.costo from servicios_eventos seev where seev.id_ser=ser.id_ser and seev.id_eve=".$id." )costo
+				$sql="select ser.id_ser, ser.nombre servicio, (select 1 from servicios_eventos seev where seev.id_ser=ser.id_ser and seev.id_eve=".$id." LIMIT 1)contratado
+								,(select seev.costo from servicios_eventos seev where seev.id_ser=ser.id_ser and seev.id_eve=".$id." LIMIT 1)costo
 								, tser.nombre tipo
 								from servicios ser
 								inner join tipo_servicio tser using(id_tip_ser)
 								where 1=1
 								order by tipo, servicio";
+				// echo $sql."<br>";
 				$stidSer = mysql_query($sql);
 				$cont = 0;
 				$ctotal = 0;
@@ -289,15 +291,15 @@ define('MODULO', 3001);
 	$addsql = "";
 	
 	$addsql .= (isset($Fevento) && $Fevento!='')? " AND ev.id_eve = ".(int)$Fevento." ":'';
-	$addsql .= (isset($Fdesde) && $Fdesde!='')? " AND ev.date >='".$Fdesde."' ":'';
-	$addsql .= (isset($Fhasta) && $Fhasta!='')? " AND ev.date <='".$Fhasta."' ":'';
+	$addsql .= (isset($Fdesde) && $Fdesde!='' and isset($Fdesde2) && $Fdesde2!='')? " AND ev.fecha >='".$Fdesde."' ":'';
+	$addsql .= (isset($Fhasta) && $Fhasta!='' and isset($Fhasta2) && $Fhasta2!='')? " AND ev.fecha <='".$Fhasta."' ":'';
 	$addsql .= (isset($Fempleado) && $Fempleado!='')? " AND ev.id_emp =".$Fempleado." ":'';
-	#$addsql .= (isset($Fgrupo) && $Fgrupo!='')? " AND gpo.id_gru =".$Fgrupo." ":'';
+	$addsql .= (isset($Fsalon) && $Fsalon!='')? " AND ev.id_sal =".$Fsalon." ":'';
 	$addsql .= (isset($Fcliente) && $Fcliente!='')? " AND ev.id_cli =".$Fcliente." ":'';
 	$addsql .= (isset($Ftipoeve) && $Ftipoeve!='')? " AND teve.id_tip_eve =".$Ftipoeve." ":'';
 	$addsql .= (isset($Ftiposer) && $Ftiposer!='')? " AND tser.id_tip_ser =".$Ftiposer." ":'';
 	$addsql .= (isset($Fservicio) && $Fservicio!='')? " AND serv.id_ser =".$Fservicio." ":'';
-	$addsql .= (isset($Ffactura) && $Ffactura!='')? " AND fac.id_fac = ".(int)$Ffactura." ":'';
+	$addsql .= (isset($Ffactura) && $Ffactura!='')? " AND fac.num_fac = ".(int)$Ffactura." ":'';
 	$addsql .= (isset($Festatus) && $Festatus!='')? " AND ev.estatus ='".$Festatus."' ":'';
 
 	#Proceso de generacion de PDF
@@ -310,7 +312,7 @@ define('MODULO', 3001);
 	$pdf->Generar();
 	$pdf->SetTitle($title);
 	$pdf->SetAuthor('VIE 2012');
-	$output = "F";
+	$output = "I";
 	$pdf->Output($archivo, $output);
 	/*
 	I: envía el fichero al navegador de forma que se usa la extensión (plug in) si está disponible. El nombre dado en nombre se usa si el usuario escoge la opción "Guardar como..." en el enlace que genera el PDF.
@@ -323,8 +325,8 @@ define('MODULO', 3001);
 	if($output == "F")
 	{
 		if (file_exists($archivo)){
-			#echo '<p>El archivo <a href="'.$archivo.'" target="_blank" class="ligaalreporte">'.$archivo.'</a> se genero exitosamente.</p>';
-			header('Location:'.$archivo);
+			echo '<p>El archivo <a href="'.$archivo.'" target="_blank" class="ligaalreporte">'.$archivo.'</a> se genero exitosamente.</p>';
+			// header('Location:'.$archivo);
 		}else{
 			echo 'Error al generar el archivo <span class="ligaalreporte">'.$archivo.'</span>';
 		}

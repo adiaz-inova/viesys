@@ -7,3 +7,16 @@
 <body>
 </body>
 </html>
+
+<?php
+if(!$_SESSION[TOKEN.'ADMIN']) {
+?>
+<script type="text/javascript">
+	$(document).ready(function() {
+
+ 		$(".rppermiso").remove();
+	});
+</script>
+<?php	
+}
+?>

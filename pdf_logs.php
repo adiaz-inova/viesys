@@ -55,7 +55,7 @@ define('MODULO', 1200);
 			$this->Cell(0,4, utf8_decode('Fecha de elaboración: ').date('d/m/Y'),0,1,'R',0);
 			$this->SetX($vie_margen);
 			$this->SetFont('Arial','',8);
-			$this->Cell(0,4, utf8_decode('Hora de elaboración: ').date('h:m:s a'),0,1,'R',0);
+			$this->Cell(0,4, utf8_decode('Hora de elaboración: ').date('h:i:s a'),0,1,'R',0);
 			$this->Ln();
 
 
@@ -181,7 +181,7 @@ define('MODULO', 1200);
 	$pdf->Generar();
 	$pdf->SetTitle($title);
 	$pdf->SetAuthor('VIE 2012');
-	$output = "F";
+	$output = "I";
 	$pdf->Output($archivo, $output);
 	/*
 	I: envía el fichero al navegador de forma que se usa la extensión (plug in) si está disponible. El nombre dado en nombre se usa si el usuario escoge la opción "Guardar como..." en el enlace que genera el PDF.

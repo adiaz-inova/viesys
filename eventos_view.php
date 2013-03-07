@@ -310,7 +310,8 @@ define('MODULO', 500);
 
 				$pdf_email = '<input type="button" value="ENVIAR" tipo="cotizaciontemp" identif="'.$id.'" onclick="outlock(this);" />';
 
-				$boton_facturar = ($reqfactura=='NO')? '':'<input type="button" value="FACTURA" identif="'.$id.'" onclick=";window.location.href=this.getAttribute(\'href\');return false;" href="facturas.php?task=add&id_eve='.$id.'" />';
+				$mostrar_factura = ($row['estatus']=='COTIZADO' or $row['estatus']=='RECHAZADO')? false: true;
+				$boton_facturar = ($reqfactura=='NO' or !$mostrar_factura)? '':'<input type="button" value="FACTURA" identif="'.$id.'" onclick=";window.location.href=this.getAttribute(\'href\');return false;" href="facturas.php?task=add&id_eve='.$id.'" />';
 				$id_evento = $id;
 				?>
 			</table>
